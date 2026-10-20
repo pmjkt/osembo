@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Osembo</title>
+<style>
+:root{--bg:#F6F1E4;--card:#FFFDF8;--tx:#1F2A37;--mut:#6B6559;--pri:#0B4F4A;--acc:#B8892B;--line:#E3DAC4;--ok:#15803D;--okb:#DCFCE7;--no:#B91C1C;--nob:#FEE2E2;--pa:#A16207;--pab:#FEF3C7;--sf:Georgia,"Times New Roman",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1B1A;--card:#162826;--tx:#F1EBDD;--mut:#A9A18E;--line:#2C4442;--acc:#D4A646;--ok:#86EFAC;--okb:#14532D;--no:#FCA5A5;--nob:#7F1D1D;--pa:#FDE68A;--pab:#713F12}}
+:root[data-theme="dark"]{--bg:#0E1B1A;--card:#162826;--tx:#F1EBDD;--mut:#A9A18E;--line:#2C4442;--acc:#D4A646;--ok:#86EFAC;--okb:#14532D;--no:#FCA5A5;--nob:#7F1D1D;--pa:#FDE68A;--pab:#713F12}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--pri);z-index:10}
+.hero{background:var(--pri);color:#fff;padding:30px 20px;text-align:center;border-bottom:3px double var(--acc);font-family:var(--sf)}
+.hd{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--pri);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px double var(--acc)}
+.logo{display:flex;align-items:center;gap:10px}
+.mono{width:42px;height:42px;border-radius:50%;border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font:700 23px var(--sf);color:var(--acc)}
+.ttl{font:700 22px var(--sf);letter-spacing:.5px}
+.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:13px;border:0;background:none;color:var(--mut);font:700 15px var(--sf);border-bottom:3px solid transparent}
+.tabs button.on{color:var(--tx);border-color:var(--acc)}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px;margin-bottom:12px}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:6px;padding:12px 16px;font:inherit;font-weight:600;width:100%;cursor:pointer}
+.btn.s{background:transparent;color:var(--tx);border:1.5px solid var(--acc)}
+.btn.g{background:var(--acc);color:#1F2A37}
+.btn.sm{width:auto;padding:7px 12px;font-size:13px;display:inline-block}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit;margin:4px 0 12px}
+label{font-size:13px;color:var(--mut)}
+.m{font-size:13px;color:var(--mut);margin:2px 0}
+h3{margin:0 0 8px;font-family:var(--sf)}
+.sec{font:700 23px var(--sf);margin:2px 0 14px}
+.pill{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:var(--okb);color:var(--ok)}
+.pill.pa{background:var(--pab);color:var(--pa)}.pill.no{background:var(--nob);color:var(--no)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{padding:8px 15px;border-radius:6px;border:1.5px solid var(--line);background:var(--card);color:var(--tx);font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--pri);border-color:var(--acc);color:#fff;font-weight:600}
+.pick{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-left:8px solid var(--c);border-radius:6px;padding:16px;margin-bottom:12px;font:inherit;color:var(--tx);cursor:pointer}
+.pick h4{margin:0 0 2px;font:700 20px var(--sf)}
+.big,.av{flex:none;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--acc)}
+.big{width:56px;height:56px;font:700 28px var(--sf)}
+.av{width:48px;height:48px}
+.go{margin-left:auto;font-size:28px;color:var(--acc)}
+.back{background:none;border:0;padding:4px 0;margin-bottom:10px;color:var(--tx);font:700 14px var(--sf);text-decoration:underline;text-decoration-color:var(--acc);text-underline-offset:4px;cursor:pointer}
+.st{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;gap:6px}
+.st b{display:block;font:700 18px var(--sf)}.st span{font-size:12px;color:var(--mut)}
+.led{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.lr{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.lr:last-child{border:0}
+.ix{width:22px;color:var(--mut);font:14px var(--sf)}
+.fbtn{position:relative;overflow:hidden;cursor:pointer}.fbtn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;padding:0;cursor:pointer;font-size:100px}
+.wg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.wc{text-align:center;border-radius:6px;padding:6px 0;font-size:12px;line-height:1.3}
+.hm{background:none;border:1.5px solid var(--acc);color:var(--acc);border-radius:6px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none}
+.pill.nc{background:var(--line);color:var(--mut)}
+@media print{.hd,.tabs,.fab,#toast,#modal,.chips,.btn,.back{display:none!important}body{background:#fff}}
+.row{display:flex;align-items:center;gap:10px;padding:11px 12px;border-left:6px solid var(--c);margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;background:var(--c,var(--pri))}
+.warn{background:#FEF3C7;color:#78350F;border-left:5px solid var(--acc);padding:12px;border-radius:6px}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--acc);color:#1F2A37;border:0;font-size:32px;box-shadow:0 4px 14px #0005;z-index:8}
+.ov{position:fixed;inset:0;background:#0008;display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:14px 14px 0 0;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+#toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:#1F2A37;color:#fff;padding:10px 16px;border-radius:6px;opacity:0;transition:opacity .2s;z-index:30;max-width:90%;text-align:center;pointer-events:none}
+.tabs{overflow-x:auto}.tabs button{white-space:nowrap;padding:13px 4px;font-size:14px}
+.prt{display:none}.lr.rv{opacity:.55}.lr.rv b{text-decoration:line-through}
+@media print{.prt{display:block;margin-bottom:10px}.noprt{display:none!important}}
+.mk{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--mut);font:700 22px system-ui;cursor:pointer;flex:none;padding:0}
+.mk.yes{background:#15803D;border-color:#15803D;color:#fff}.mk.no{background:#B91C1C;border-color:#B91C1C;color:#fff}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-bottom:3px solid var(--acc);border-radius:6px;padding:18px 10px;font:700 16px var(--sf);color:var(--tx);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}.tile span{font-size:28px}
+.welcome{background:var(--pri);color:#fff;border-radius:6px;padding:24px 18px;text-align:center;border-bottom:3px double var(--acc);margin-bottom:12px;font-family:var(--sf)}
+
+textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit;margin:10px 0 0}
+.hgrid{display:grid;gap:12px}.hgrid>*{margin-bottom:0!important;min-width:0}
+.a-w{grid-area:w}.a-s{grid-area:s}.a-n{grid-area:n}.a-r{grid-area:r}.a-a{grid-area:a}.a-t{grid-area:t}
+.mg,.fg{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.sg{display:grid;gap:0 22px}
+.led .lr{min-width:0}
+@media(min-width:900px){
+body{font-size:16px}
+.wrap{max-width:1180px;padding:28px 32px 90px}
+.hd{padding:14px 32px;padding-left:max(32px,calc((100% - 1116px)/2));padding-right:max(32px,calc((100% - 1116px)/2))}
+.tabs{justify-content:center;overflow-x:visible}.tabs button{flex:none;padding:16px 32px;font-size:16px}
+.hgrid{grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.welcome{padding:30px}
+.tiles{grid-template-columns:repeat(3,1fr);gap:12px}.tile{padding:24px 10px}
+.led{display:grid;grid-template-columns:1fr 1fr}.led .lr{border-right:1px solid var(--line)}.led .lr:nth-child(even){border-right:0}
+.wrap>.pick{max-width:760px}
+.sec{font-size:28px}
+.ov{align-items:center}.sheet{border-radius:14px;max-width:660px;box-shadow:0 12px 40px #0006}
+.mg{grid-template-columns:repeat(3,1fr)}.fg{grid-template-columns:repeat(4,1fr)}.sg{grid-template-columns:repeat(3,1fr)}
+.card:hover{border-color:var(--acc)}
+}
+.btn.dn{background:#B91C1C;color:#fff}
+.cgrid{display:grid;gap:0 14px}
+@media(min-width:900px){.cgrid{grid-template-columns:1fr 1fr}}
+#pa{display:none;--bg:#fff;--card:#fff;--tx:#111;--mut:#555;--line:#999}
+@media print{body.prc #app,body.prc #modal,body.prc #toast{display:none!important}body.prc #pa{display:block;color:#111;background:#fff}.rcpage{page-break-after:always}.rcpage:last-child{page-break-after:auto}}
+.hgrid{grid-template-areas:"w" "s" "t" "n" "a"}
+@media(min-width:900px){.hgrid{grid-template-areas:"w w" "s s" "t t" "n a"}.tiles.t4{grid-template-columns:repeat(4,1fr)}.led.one{display:block}.led.one .lr{border-right:0}}
+.tcard{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:6px;padding:12px 14px;text-align:left;color:var(--tx);font:inherit;cursor:pointer;display:block;width:100%}.tcard b{font:700 16px var(--sf)}
+.chips.sc{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.chips.sc .chip{flex:none;white-space:nowrap}.mc{opacity:.7;font-size:12px}
+.lr .mi{width:84px;margin:0;text-align:center;font-weight:700;font-size:18px;padding:9px 6px;flex:none}.mi.bad{border-color:var(--no);background:var(--nob)}
+.ib{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line);background:none;color:var(--mut);font:italic 700 15px var(--sf);cursor:pointer;flex:none;padding:0;margin-left:6px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.acts .btn{margin:0}
+details.card summary{cursor:pointer;list-style:none}details.card summary::-webkit-details-marker{display:none}
+@page{size:A4 portrait;margin:8mm}
+.rcpage{--bg:#fff;--card:#fff;--tx:#111;--mut:#555;--line:#c9c2ad;background:#fff;color:#111;border:3px double #0B4F4A;outline:1px solid #B8892B;outline-offset:-7px;padding:12px 14px;font:11px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;position:relative;overflow:hidden;margin-bottom:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rcpage::before{content:"O";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:700 330px Georgia,serif;color:#0B4F4A;opacity:.045;pointer-events:none}
+.rcpage>*{position:relative}
+.rc-h{display:flex;align-items:center;gap:10px;padding-bottom:6px;border-bottom:2px solid #B8892B}
+.rc-crest{width:44px;height:44px;border-radius:50%;border:2px solid #B8892B;background:#0B4F4A;color:#D4A646;display:flex;align-items:center;justify-content:center;font:700 24px Georgia,serif;flex:none}
+.rc-t{flex:1;text-align:center}.rc-t h2{font:700 21px Georgia,serif;margin:0;letter-spacing:2px;color:#0B4F4A}.rc-t div{font-size:10px;color:#555;font-style:italic}
+.rc-ban{background:#0B4F4A;color:#fff;text-align:center;font:700 11px Georgia,serif;letter-spacing:1.5px;padding:3px;margin:6px 0}
+.rc-info{display:grid;grid-template-columns:repeat(4,auto);gap:2px 12px;margin-bottom:6px;justify-content:space-between}.rc-info span{color:#555}
+.rc-sum{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:6px}.rc-sum>div{border:1px solid #c9c2ad;border-top:3px solid #B8892B;border-radius:4px;text-align:center;padding:3px 2px;background:#fffdf8}.rc-sum b{display:block;font:700 14px Georgia,serif}.rc-sum span{font-size:8.5px;color:#555}
+table.rt{width:100%;border-collapse:collapse;font-size:10.5px}.rt th{background:#0B4F4A;color:#fff;padding:3px 4px;text-align:center;font-weight:600;font-size:9.5px}.rt td{border:1px solid #c9c2ad;padding:2px 5px;text-align:center}.rt td:first-child,.rt th:first-child,.rt td.l{text-align:left}.rt tr:nth-child(even) td{background:#f7f3e8}.rt tr.tot td{font-weight:700;background:#efe7cf}
+.rc-lv{display:inline-block;min-width:26px;border-radius:9px;padding:0 6px;color:#fff;font-weight:700;font-size:10px;text-align:center}
+.rc-ch{display:flex;gap:6px;margin-top:6px}.rc-ch>div{border:1px solid #c9c2ad;border-radius:4px;padding:3px 4px;background:#fffdf8;min-width:0}.rc-ch .a{flex:1.7}.rc-ch .b{flex:1}.rc-ch h5{margin:0 0 2px;font:700 9.5px Georgia,serif;color:#0B4F4A;display:flex;justify-content:space-between;gap:4px;flex-wrap:wrap}
+.rc-sum .rc-lv{font:700 12px system-ui,sans-serif;padding:1px 9px;min-width:34px}
+.rc-lg{font:400 8px system-ui,sans-serif;color:#555}.rc-lg i{display:inline-block;width:7px;height:7px;margin:0 2px 0 4px;vertical-align:baseline}
+.rc-cm{margin-top:6px;border:1px solid #c9c2ad;border-radius:4px;padding:4px 6px;background:#fffdf8}.rc-cm b{color:#0B4F4A}
+.rc-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;font-size:10px;color:#333}
+.rc-sg{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;margin-top:6px}.rc-sg .ln{border-top:1px solid #111;padding-top:2px;font-size:9px;text-align:center;margin-top:20px}
+.rc-st{width:58px;height:58px;border:1.5px dashed #999;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:#999;text-align:center}
+.rc-key{font-size:8px;color:#555;margin-top:5px;text-align:center}
+.rc-rib{display:inline-block;background:#B8892B;color:#fff;border-radius:3px;padding:0 5px;font-weight:700;font-size:8.5px;margin-left:5px;vertical-align:middle}
+@media print{.rcpage{margin:0!important}}
+</style></head><body>
+<div id="app"></div><div id="modal"></div><div id="toast"></div><div id="pa"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+let WK=50;const TILL="3563482",FEE=150,W=13,PREVIEW=false,NOLOGIN=false;
+const CL=["7 Athi","7 Tana","8 Athi","8 Tana","9 Athi","9 Tana"];
+const COL={"7 Athi":"#60A5FA","7 Tana":"#1D4ED8","8 Athi":"#A78BFA","8 Tana":"#6D28D9","9 Athi":"#FB923C","9 Tana":"#C2410C"};
+let S,ui={sess:null,rec:0,tmp:{},cls:null,grade:null,week:1,per:"week",tab:"class",lk:{}};
+const today=()=>new Date().toISOString().slice(0,10);
+const attKey=(date,id)=>date+"|"+id;
+const attStatus=(date,id)=>((S.attendance||{})[attKey(date,id)]||{}).status||"Unmarked";
+const attCount=(students,date,status)=>students.filter(s=>attStatus(date,s.id)===status).length;
+const phoneWA=p=>{p=String(p||"").replace(/\D/g,"");if(p.startsWith("0"))p="254"+p.slice(1);if(p.startsWith("7")||p.startsWith("1"))p="254"+p;return p;};
+const $=s=>document.querySelector(s);
+const U=id=>S.users.find(u=>u.id===id),me=()=>U(ui.sess);
+const fmt=n=>"KSh "+n.toLocaleString();
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const amt=(s,w)=>s.pays[w]||0;
+const stat=a=>a>=WK?["Paid",""]:a>0?["Partial","pa"]:["Unpaid","no"];
+const inCls=c=>S.st.filter(s=>s.cls===c&&!s.left),live=()=>S.st.filter(s=>!s.left),hnd=c=>S.hand.filter(x=>x.cls===c).reduce((t,x)=>t+x.a,0);
+const LOG=m=>{S.log.unshift({t:Date.now(),u:me()?me().name:"?",m});S.log.length=Math.min(S.log.length,200)};
+const wl=w=>"Week "+w+(S.start?" · "+new Date(new Date(S.start).getTime()+(w-1)*6048e5).toLocaleDateString("en-GB",{day:"numeric",month:"short"}):"")+(S.hol[w]?" · No collection":"");
+const sum=o=>Object.values(o).reduce((a,b)=>a+b,0);
+const tot=(c,p)=>inCls(c).reduce((t,s)=>t+(p==="week"?amt(s,S.week):sum(s.pays)),0);
+const arrears=s=>{let a=0;for(let w=1;w<=S.week;w++)if(!S.hol[w])a+=Math.max(0,WK-amt(s,w));return a};
+const canEdit=c=>{const u=me();return u&&(u.role==="admin"||u.cls===c)};
+// Marks permission: every teacher has it by default (for their own class); admin can switch it off per teacher.
+const canMarks=c=>{const u=me();return !!(u&&(u.role==="admin"||u.role==="teacher"&&u.marks!==false&&u.cls===c))};
+// Class-teacher permissions: attendance register and personal profiles are limited to the teacher's assigned class.
+const canViewStudent=s=>{const u=me();return !!(u&&s&&(u.role==="admin"||u.role==="teacher"&&u.cls===s.cls))};
+const canMarkAttendance=s=>{const u=me();return !!(u&&s&&(u.role==="admin"||u.role==="teacher"&&u.cls===s.cls))};
+const mask=p=>p.slice(0,2)+"** *** "+p.slice(-3);
+const nextAdm=()=>String(Math.max(1000,...S.st.map(x=>Number(x.adm)||0))+1);
+const bakWarn=()=>(!S.lastBak||Date.now()-S.lastBak>6048e5)?`<div class="warn" style="margin-bottom:12px"><b>Back up your data</b><div>${S.lastBak?"Last backup was "+Math.floor((Date.now()-S.lastBak)/864e5)+" days ago.":"You have never downloaded a backup."} Data lives only on this device.</div></div>`:"";
+const code6=()=>String(Math.floor(100000+Math.random()*900000));
+function seed(){
+  const N=["Brian Otieno","Amina Hassan","Kevin Mwangi","Grace Wanjiru","Faith Achieng","Peter Kiprop","Mercy Naliaka","Ian Kamau"];
+  let st=[],r=7;const rnd=()=>(r=(r*9301+49297)%233280)/233280;
+  CL.forEach((c,ci)=>{for(let i=0;i<5+ci%3;i++){let p={};for(let w=1;w<=4;w++)if(rnd()<.7)p[w]=rnd()<.85?50:20;
+    st.push({id:c.replace(" ","")+i,adm:String(1000+ci*100+i),name:N[(i+ci)%8],parent:"Parent",phone:"0712345678",cls:c,demo:1,pays:p})}});
+  const us=[{id:"admin",name:"Admin",role:"admin",code:"111111"}].concat(CL.map(c=>({id:c,name:"Teacher "+c,role:"teacher",cls:c,code:code6()})));
+  return{act:0,pend:null,users:us,st,week:4}
+}
+const SB_URL="https://drjwvbggjioqtruyxbnp.supabase.co";
+const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyand2YmdnamlvcXRydXl4Ym5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDUxODMsImV4cCI6MjEwODA4MTE4M30.HoH45uNZqLeh_W-qVqXpT87JKbul6s5h9GsVX-L3xx8";
+const SCHOOL_ID="osembo-main";
+const ADMIN_EMAIL="pm7huo@gmail.com"; // replace with the admin's login email
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+let ONLINE=false;
+async function load(){
+  try{
+    const {data,error}=await sb.from("app_state").select("data").eq("school_id",SCHOOL_ID).maybeSingle();
+    if(error) throw error;
+    ONLINE=true;
+    if(data&&data.data) S=data.data;
+  }catch(e){
+    console.warn("Could not reach server, using this browser's copy only",e);
+    try{S=JSON.parse(localStorage.getItem("osembo1"))}catch(x){}
+  }
+  if(!S)S=seed();
+  fix();
+}
+async function loadThenRender(){await load();R()}
+function fix(){S.hand=S.hand||[];S.log=S.log||[];S.hol=S.hol||{};S.attendance=S.attendance||{};S.fp=S.fp||[];if(!S.fy){const d=new Date();S.fy=d.getFullYear();S.ft=d.getMonth()<4?1:d.getMonth()<8?2:3}S.rem=S.rem||{};S.subjT=S.subjT||{};S.rc=S.rc||{motto:"",next:"",head:""};S.receipts=S.receipts||[];S.announcements=S.announcements||[];S.st.forEach(x=>{if(!x.adm)x.adm=nextAdm()});DEMO();WK=S.fee||50;ui.week=S.week;ui.fy=ui.fy||S.fy;ui.ft=ui.ft||S.ft}
+function save(){
+  try{localStorage.setItem("osembo1",JSON.stringify(S))}catch(e){}
+  if(!ONLINE) return;
+  sb.from("app_state").upsert({school_id:SCHOOL_ID,data:S,updated_at:new Date().toISOString()},{onConflict:"school_id"})
+    .then(({error})=>{if(error){console.error("Save to server failed",error);T("Could not save to server. Check your connection.")}});
+}
+function T(m){const t=$("#toast");t.textContent=m;t.style.opacity=1;clearTimeout(T.h);T.h=setTimeout(()=>t.style.opacity=0,2800)}
+function M(h){$("#modal").innerHTML=h}
+function cm(){M("")}
+const hero=()=>`<div class="hero"><div style="font-size:36px;font-weight:800">Osembo</div><div style="opacity:.9">Weekly fee collection · KSh ${WK} per student</div></div>`;
+
+/* ---------- activation ---------- */
+function vAct(){const p=S.pend;
+  return hero()+`<div class="wrap"><div class="warn"><b>🔒 Activation required</b><br>Osembo is locked until the school admin pays. Teachers: the school account is not activated, please contact the admin.</div><div class="card" style="margin-top:12px">`+
+  (p?`<h3>Payment submitted</h3><p>Code <b>${esc(p.code)}</b> from ${esc(p.phone)} is waiting to be checked against the till statement.</p><button class="btn g" onclick="approve()">Approve (demo only)</button><p class="m" style="margin-top:8px">In the live version, only a code that matches Till ${TILL} unlocks the app.</p>`:
+  `<h3>Admin: activate Osembo</h3><p>Pay <b>KSh ${FEE}</b> to <b>Buy Goods Till ${TILL}</b> (Lipa na M-Pesa, then Buy Goods), then enter the details below.</p><label>M-Pesa transaction code</label><input id="mc" maxlength="10" placeholder="e.g. SHK4X7ABC2" style="text-transform:uppercase"><label>Phone you paid from</label><input id="mp" inputmode="tel" placeholder="07XX XXX XXX"><button class="btn" onclick="submitAct()">Submit payment</button>`)+`</div>`+(PREVIEW?`<button class="btn s" onclick="skipAct()">Preview without paying</button><p class="m">Preview only. This button is removed before real use.</p>`:"")+`</div>`}
+function submitAct(){const c=$("#mc").value.trim().toUpperCase(),p=$("#mp").value.replace(/\s/g,"");
+  if(!/^[A-Z0-9]{10}$/.test(c))return T("M-Pesa code must be 10 letters or numbers");
+  if(!/^0[17]\d{8}$/.test(p))return T("Enter a valid phone, e.g. 0712345678");
+  S.pend={code:c,phone:p};save();R()}
+function skipAct(){S.act=1;S.pend=null;S.preview=1;save();T("Preview mode. Admin one-time code is 111111");R()}
+function approve(){S.act=1;S.preview=0;S.pend=null;save();T("Activated. Log in as Admin with one-time code 111111");R()}
+
+/* ---------- login (Supabase email accounts, invite only) ---------- */
+let LOGIN_MSG="",RECOVERY=0;
+function vLogin(){
+  if(RECOVERY) return hero()+`<div class="wrap"><div class="card"><h3>Choose a new password</h3><label>New password (6+ characters)</label><input id="npw" type="password" autocomplete="new-password"><button class="btn" onclick="setNewPw()">Save password</button></div></div>`;
+  return hero()+`<div class="wrap"><div class="card"><h3>Log in</h3>${LOGIN_MSG?`<div class="warn">${esc(LOGIN_MSG)}</div>`:""}<label>Email</label><input id="em" type="email" autocomplete="username" inputmode="email"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><button class="btn" onclick="login()">Log in</button><button class="btn s sm" style="margin-top:10px;width:100%" onclick="forgot()">Forgot password? Email me a reset link</button></div><p class="m">Accounts are created by the school admin. Contact the admin if you don't have one.</p></div>`;
+}
+async function login(){
+  const email=$("#em").value.trim(),pw=$("#pw").value;
+  if(!email||!pw)return T("Enter your email and password");
+  const {error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){LOGIN_MSG="Wrong email or password.";R()}
+}
+async function forgot(){
+  const e=$("#em").value.trim();if(!e)return T("Type your email above first");
+  const {error}=await sb.auth.resetPasswordForEmail(e,{redirectTo:window.location.href});
+  T(error?"Could not send the email. Check the address.":"If that email has an account, a reset link is on its way.");
+}
+async function setNewPw(){
+  const pw=$("#npw").value;if(pw.length<6)return T("Password needs at least 6 characters");
+  const {error}=await sb.auth.updateUser({password:pw});
+  if(error)return T("Could not save the password. Request a new reset link.");
+  RECOVERY=0;T("Password saved");
+  const {data}=await sb.auth.getSession();if(data.session)await enter(data.session.user.email);
+}
+async function enter(email){
+  await load();S.act=1;S.preview=0;
+  const e=email.toLowerCase();
+  if(ADMIN_EMAIL&&e===ADMIN_EMAIL.toLowerCase()){const a=S.users.find(x=>x.role==="admin");if(a)a.email=ADMIN_EMAIL}
+  const u=S.users.find(x=>x.email&&x.email.toLowerCase()===e);
+  if(!u){LOGIN_MSG="This account is not set up for Osembo. Ask the school admin.";await sb.auth.signOut();return R()}
+  LOGIN_MSG="";ui.sess=u.id;ui.tab="home";if(u.role==="teacher")ui.cls=u.cls;ui.week=S.week;R();
+}
+async function logout(){await sb.auth.signOut();ui.sess=null;R()}
+async function boot(){
+  const {data}=await sb.auth.getSession();
+  if(data.session)await enter(data.session.user.email);else R();
+}
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(event==="PASSWORD_RECOVERY"){RECOVERY=1;R()}
+  else if(event==="SIGNED_IN"&&session&&!ui.sess){await enter(session.user.email)}
+  else if(event==="SIGNED_OUT"){ui.sess=null;R()}
+});
+
+/* ---------- main ---------- */
+const ICON='<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>';
+const tab=(k,l)=>`<button class="${ui.tab===k?"on":""}" onclick="go('${k}')">${l}</button>`;
+const HOUSE='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg>';
+function go(k){cm();ui.tab=k;ui.q="";ui.hq="";ui.cq="";if(k==="classes"&&me().role==="admin")ui.cp=null;if(k==="class"&&me().role==="admin"){ui.grade=null;ui.cls=null}R();window.scrollTo(0,0)}
+function home(){go("home")}
+function vMain(){const u=me(),ad=u.role==="admin";if(!ad){ui.cls=u.cls;ui.grade=u.cls.split(" ")[0];if(ui.tab==="adm")ui.tab="home"}
+  const who=`<button class="btn g sm" onclick="logout()">Log out</button>`;
+  return `<div class="hd"><div class="logo" onclick="home()" style="cursor:pointer"><div class="mono">O</div><div><div class="ttl">Osembo</div><div style="font-size:12px;opacity:.9">${ad?"Administrator":"Class teacher, "+u.cls}</div></div></div><div style="display:flex;gap:8px;align-items:center"><button class="hm" onclick="openSearch()" aria-label="Search students">${SRCH}</button><button class="hm" onclick="home()" aria-label="Home">${HOUSE}</button>${who}</div></div>
+${S.preview?`<div class="warn" style="border-radius:0;font-size:13px">${NOLOGIN?"Testing mode: login and activation are switched off.":"Preview mode: activation fee not paid yet."}</div>`:""}
+<div class="tabs">${tab("home","Home")}${tab("classes",ad?"Classes":"My Class")}${tab("attendance","Register")}${tab("class","Remedial")}${tab("fees","Fees")}${tab("academics","Academics")}${tab("marks","Marks")}${ad?tab("adm","Admin"):""}</div>
+<div class="wrap">${ui.tab==="home"?vHome():ui.tab==="class"?vClassTab():ui.tab==="attendance"?vAttendance():ui.tab==="fees"?vFees():ui.tab==="academics"?vAcad():ui.tab==="marks"?vMarks():ui.tab==="classes"?vClasses():ui.tab==="adm"&&ad?vAdm():vHome()}</div>${ui.tab==="classes"&&ui.cp&&canEdit(ui.cp)?`<button class="fab" onclick="addSt('${ui.cp}')" aria-label="Add student">+</button>`:""}`}
+function remChips(){return `<div class="chips sc"><button class="chip ${!ui.cls?"on":""}" onclick="setC(null)">All classes</button>${CL.map(c=>`<button class="chip ${ui.cls===c?"on":""}" onclick="setC('${c}')">${c}</button>`).join("")}</div>`}
+function vClassTab(){const ad=me().role==="admin";return `<h2 class="sec">Remedial</h2>`+(ad?remChips():"")+(ad&&!ui.cls?vRemAll():vView())}
+function recentReceipts(){const u=me(),R=(S.receipts||[]).filter(r=>u.role==="admin"||r.class===u.cls).slice(-5).reverse();if(!R.length)return"";
+  return `<h3 style="margin-top:16px">Recent receipts</h3><div class="led one">${R.map(r=>`<div class="lr" style="cursor:default"><div style="flex:1"><b>${esc(r.number)}</b><div class="m">${esc(r.student)} · ${esc(r.date)}</div></div><b>${fmt(r.amount)}</b></div>`).join("")}</div>`}
+function vRemAll(){const p=ui.per,L=CL.map(c=>({c,t:tot(c,p),n:inCls(c).length,o:inCls(c).reduce((a,s)=>a+arrears(s),0)})).sort((a,b)=>b.t-a.t),mx=Math.max(1,L[0].t),D=live().map(s=>({s,ar:arrears(s)})).filter(x=>x.ar>0).sort((a,b)=>b.ar-a.ar);
+  return vTotals()+`<div class="chips"><button class="chip ${p==="week"?"on":""}" onclick="ui.per='week';R()">This week</button><button class="chip ${p==="term"?"on":""}" onclick="ui.per='term';R()">This term</button></div>`+
+  L.map((x,i)=>`<div class="card" style="--c:${COL[x.c]};cursor:pointer" onclick="setC('${x.c}')"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${x.c}</b><b>${fmt(x.t)}</b></div><div class="m">${x.n} students · still owed ${fmt(x.o)}</div><div class="bar"><i style="width:${Math.round(x.t/mx*100)}%"></i></div></div>`).join("")+
+  `<h3 style="margin-top:16px">Defaulters (${D.length})</h3><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><button class="btn sm" onclick="exp()">Export CSV (Excel)</button><button class="btn s sm" onclick="window.print()">Print or save PDF</button></div>`+
+  (D.length?`<div class="led one">`+D.slice(0,60).map(({s,ar})=>`<div class="lr" onclick="det('${s.id}')"><span style="width:10px;height:10px;border-radius:50%;background:${COL[s.cls]};flex:none"></span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">${s.cls} · ${esc(s.parent||"")}</div></div><div style="text-align:right"><b>${fmt(ar)}</b><div style="margin-top:4px">${s.phone?`<a class="pill" href="tel:${esc(s.phone)}" onclick="event.stopPropagation()" style="text-decoration:none">Call</a> <a class="pill" href="#" onclick="event.stopPropagation();parentMessage('${s.id}','balance');return false" style="text-decoration:none">WhatsApp</a>`:`<span class="m">No phone</span>`}</div></div></div>`).join("")+`</div>${D.length>60?`<div class="m" style="margin-top:6px">Showing the 60 largest of ${D.length}. Export the CSV for the full list.</div>`:""}`:`<div class="card m">Nobody owes anything.</div>`)+recentReceipts()}
+const SRCH='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></svg>';
+const latestEx=()=>EX.slice().reverse().find(e=>Object.keys(S.res).some(k=>k.startsWith(S.fy+"|"+S.ft+"|"+e+"|")))||EX[0];
+const HINT='<div class="m" style="padding:10px 2px">Type a name, admission number, parent name or phone. Press Enter to open the first match. If only one student matches, the profile opens by itself.</div>';
+function findS(q){q=(q||"").trim().toLowerCase();if(!q)return[];const w=q.split(/\s+/),dg=q.replace(/\D/g,"");
+  return S.st.filter(s=>!s.left&&canViewStudent(s)).filter(s=>{const h=(s.name+" "+(s.adm||"")+" "+(s.parent||"")).toLowerCase();return w.every(x=>h.includes(x))||(dg.length>=4&&String(s.phone||"").replace(/\D/g,"").includes(dg))}).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,12)}
+function sRows(L,q){if(!L.length)return `<div class="m" style="margin-top:10px">No student found for “${esc(q)}”${me().role==="admin"?"":" in your class"}.</div>`;
+  return `<div class="m" style="margin:10px 0 4px">${L.length}${L.length===12?"+":""} found · tap a name for full details</div><div class="led one">`+L.map(s=>{const ar=arrears(s),fb=TF-fPaid(s,S.fy,S.ft),lr=lastRes(s),m=lr?rmean(lr.r):null;
+    return `<div class="lr" onclick="det('${s.id}')"><span style="width:10px;height:10px;border-radius:50%;background:${COL[s.cls]};flex:none"></span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">Adm. ${esc(s.adm||"—")} · ${s.cls}</div><div class="m">${ar?"Remedial owes "+fmt(ar):"Remedial clear"} · Fees balance ${fmt(fb)}</div></div>${m!=null?`<span class="pill ${gk(gr(m))}">${gr(m)}</span>`:""}</div>`}).join("")+`</div>`}
+function sGo(q,box){const L=findS(q),t=(q||"").trim();$(box).innerHTML=t?sRows(L,t):(box==="#gres"?HINT:"");clearTimeout(sGo.h);
+  if(L.length===1&&t.length>=3&&ui.sp!==t.toLowerCase())sGo.h=setTimeout(()=>{ui.sp=t.toLowerCase();det(L[0].id)},550)}
+function skey(e){if(e.key!=="Enter")return;const L=findS(e.target.value);if(L[0]){e.preventDefault();clearTimeout(sGo.h);det(L[0].id)}}
+function openSearch(){ui.sp="";M(`<div class="ov" onclick="if(event.target===this)cm()" style="align-items:flex-start"><div class="sheet" style="border-radius:0 0 14px 14px;max-height:92vh;overflow:auto"><div style="display:flex;gap:8px;align-items:center"><input id="gq" type="search" autocomplete="off" placeholder="Search a student" oninput="sGo(this.value,'#gres')" onkeydown="skey(event)" style="margin:0"><button class="btn s sm" onclick="cm()">Close</button></div><div id="gres">${HINT}</div></div></div>`);setTimeout(()=>{const i=$("#gq");if(i)i.focus()},60)}
+function det(id){const s=S.st.find(x=>x.id===id);if(!canViewStudent(s))return;
+  const tc=U(s.cls),ed=canEdit(s.cls),ar=arrears(s),tm=sum(s.pays),[tx,k]=stat(amt(s,S.week)),fp=fPaid(s,S.fy,S.ft),fb=TF-fp,[ft,fk]=fStat(fp),lr=lastRes(s),m=lr?rmean(lr.r):null,
+  ak=Object.keys(S.attendance).filter(x=>x.endsWith("|"+s.id)).map(x=>S.attendance[x].status),ap=ak.filter(x=>x==="Present").length,aa=ak.filter(x=>x==="Absent").length,apc=ak.length?Math.round((ak.length-aa)/ak.length*100):null;let g="";
+  for(let w=1;w<=W;w++){const a=amt(s,w);const c=a>=WK?"background:var(--okb);color:var(--ok)":a>0?"background:var(--pab);color:var(--pa)":w>S.week||S.hol[w]?"background:var(--line);color:var(--mut)":"background:var(--nob);color:var(--no)";g+=`<div class="wc" style="${c}"><b>${w}</b><br>${a||"-"}</div>`}
+  const tl=(b,sp)=>`<div class="card st" style="display:block;margin:0"><b>${b}</b><span style="display:block">${sp}</span></div>`;
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:92vh;overflow:auto">
+<div style="display:flex;gap:12px;align-items:center"><div class="av" style="--c:${COL[s.cls]}">${ICON}</div><div style="flex:1;min-width:0"><div style="font:700 22px var(--sf)">${esc(s.name)}</div><div class="m">${s.cls} · Adm. ${esc(s.adm||"Not assigned")}</div><div class="m">Class teacher: ${esc(tc.name)}</div></div><button class="btn s sm" onclick="cm()" aria-label="Close">✕</button></div>
+<div class="card" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div class="m">Parent / guardian</div><b>${esc(s.parent||"")||"Not recorded"}</b></div><div><div class="m">Phone</div>${s.phone?`<a href="tel:${esc(s.phone)}" style="color:var(--tx);font-weight:700">${esc(s.phone)}</a>`:"<b>Not recorded</b>"}</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">${tl(fmt(ar),"Remedial owed")}${tl(fmt(fb),"Fees balance, Term "+S.ft)}${tl(m!=null?r1(m)+"%":"–","Latest mean"+(m!=null?" · "+gr(m):""))}${tl(apc==null?"–":apc+"%","Attendance · "+ap+" present, "+aa+" absent")}</div>
+${acadCard(s)}
+<div class="card"><div class="m"><b>School fees · Term ${S.ft}, ${S.fy}</b></div><div class="st" style="margin-top:6px"><div><b>${fmt(fp)}</b><span>Paid of ${fmt(TF)}</span></div><div><b>${fmt(fb)}</b><span>Balance</span></div><div><span class="pill ${fk}">${ft}</span></div></div><button class="btn s sm" style="margin-top:10px" onclick="ui.fy=S.fy;ui.ft=S.ft;fdet('${id}')">Payment history</button></div>
+<div class="card"><div class="m"><b>Remedial, week by week (KSh)</b></div><div class="st" style="margin:6px 0 10px"><div><b>${fmt(tm)}</b><span>Paid this term</span></div><div><b>${fmt(ar)}</b><span>Owes</span></div><div><span class="pill ${k}">${tx}</span><span style="display:block;margin-top:4px">Week ${S.week}</span></div></div><div class="wg">${g}</div></div>
+<div class="acts">${ed?`<button class="btn" onclick="ui.week=S.week;payM('${id}')">Record Week ${S.week} payment</button>`:""}${ed&&fb>0?`<button class="btn s" onclick="ui.fy=S.fy;ui.ft=S.ft;fpayM('${id}')">Record school fees</button>`:""}${ed?`<button class="btn s" onclick="receiptM('${id}')">Payment receipt</button><button class="btn s" onclick="parentMessage('${id}','balance')">WhatsApp: balance</button><button class="btn s" onclick="parentMessage('${id}','attendance')">WhatsApp: attendance</button><button class="btn s" onclick="editM('${id}')">Edit details</button>`:""}</div>
+<button class="btn s" style="margin-top:10px" onclick="cm()">Close</button></div></div>`)}
+function setC(c){ui.cls=c;ui.owe=0;R()}
+function wk(d){ui.week=Math.min(W,Math.max(1,ui.week+d));R()}
+function vTotals(){const wkT=CL.reduce((t,c)=>t+tot(c,"week"),0),tm=CL.reduce((t,c)=>t+tot(c,"term"),0),ow=live().reduce((t,s)=>t+arrears(s),0);
+  return `<div class="card" style="border-top:3px solid var(--acc)"><div class="m">Remedial money collected this term, whole school</div><div style="font:700 32px var(--sf)">${fmt(tm)}</div><div class="st" style="margin-top:10px"><div><b>${fmt(wkT)}</b><span>This week</span></div><div><b>${fmt(ow)}</b><span>Still owed</span></div><div><b>${live().length}</b><span>Students</span></div></div></div>`}
+function vView(){const c=ui.cls,L=inCls(c),w=ui.week,t=U(c),
+  co=L.reduce((s,x)=>s+amt(x,w),0),ex=S.hol[w]?0:L.length*WK,np=L.filter(s=>amt(s,w)>=WK).length,pc=ex?Math.min(100,Math.round(co/ex*100)):0,V=ui.owe?L.filter(s=>arrears(s)>0):L;
+  const rows=V.length?`<div class="led one">`+V.map((s,i)=>{const a=amt(s,w),[tx,k]=S.hol[w]&&!a?["No collection","nc"]:stat(a),ar=arrears(s);
+    return `<div class="lr" onclick="${ui.quick?"qk":"payM"}('${s.id}')"><span class="ix">${i+1}</span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">${ar?"Owes "+fmt(ar):"No arrears"}</div></div><div style="text-align:right"><span class="pill ${k}">${tx}</span>${a?`<div class="m">${fmt(a)}</div>`:""}</div><button class="ib" onclick="event.stopPropagation();det('${s.id}')" aria-label="Open profile">i</button></div>`}).join("")+`</div>`:`<div class="card m">${ui.owe?"Nobody owes anything.":"No students yet. Add them from the Classes tab."}</div>`;
+  return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px"><button class="chip" onclick="wk(-1)">‹</button><b style="font-family:var(--sf)">${wl(w)}${w===S.week?" (current)":""}</b><button class="chip" onclick="wk(1)">›</button></div>
+<div class="card" style="border-top:3px solid ${COL[c]}"><div class="m" style="margin-bottom:6px">${c} · Class teacher <b>${esc(t.name)}</b></div><div class="st"><div><b>${np}/${L.length}</b><span>Paid</span></div><div><b>${fmt(co)}</b><span>Collected</span></div><div><b>${fmt(ex)}</b><span>Expected</span></div></div><div class="bar" style="--c:${COL[c]}"><i style="width:${pc}%"></i></div><div class="m" style="margin-top:8px">Collected this term: <b>${fmt(tot(c,"term"))}</b> · Handed to bursar: <b>${fmt(hnd(c))}</b> · Not yet handed in: <b>${fmt(tot(c,"term")-hnd(c))}</b></div></div>
+<div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn s sm" style="${ui.quick?"background:var(--acc);color:#1F2A37":""}" onclick="ui.quick=!ui.quick;R()">Quick mark: ${ui.quick?"on":"off"}</button><button class="btn s sm" style="${ui.owe?"background:var(--acc);color:#1F2A37":""}" onclick="ui.owe=!ui.owe;R()">Owing only</button><button class="btn s sm" onclick="exp()">Export CSV</button><button class="btn s sm" onclick="window.print()">Print</button></div>`+rows+recentReceipts()}
+function payM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>${esc(s.name)}</h3><p class="m">Week ${ui.week}</p><label>Amount received (KSh)</label><input id="pa" type="number" min="0" inputmode="numeric" value="${amt(s,ui.week)||WK}"><button class="btn" onclick="savePay('${id}')">Save payment</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function savePay(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;
+  const a=Math.max(0,Math.round(+$("#pa").value||0));if(a)s.pays[ui.week]=a;else delete s.pays[ui.week];
+  LOG(s.name+" week "+ui.week+": "+fmt(a));save();cm();R();T(a?"Saved "+fmt(a):"Payment cleared")}
+function parseList(txt,cls){
+  const rows=txt.replace(/^\uFEFF/,"").split(/\r?\n/).map(l=>l.split(",").map(v=>v.trim().replace(/^"|"$/g,"")));
+  let o=/^\d+$/.test((rows[0]||[])[0]||"")?1:0,ix={name:o,parent:o+1,phone:o+2,wk:{}};for(let w=1;w<=W;w++)ix.wk[w]=o+2+w;
+  if((rows[0]||[]).some(v=>/name/i.test(v))){ix={wk:{}};rows.shift().forEach((v,i)=>{const l=v.toLowerCase(),m=l.match(/^week\s*(\d+)$/);
+    if(m){if(+m[1]>=1&&+m[1]<=W)ix.wk[+m[1]]=i}else if(/adm/.test(l))ix.adm=i;else if(/parent|guardian/.test(l))ix.parent=i;else if(/phone/.test(l))ix.phone=i;else if(/name/.test(l)&&ix.name==null)ix.name=i})}
+  let a=0,u=0;
+  rows.forEach((c,k)=>{const name=c[ix.name];if(!name||/^\d+$/.test(name))return;
+    const ph=(c[ix.phone]||"").replace(/\s/g,""),ad=ix.adm!=null?(c[ix.adm]||"").trim():"";
+    let s=S.st.find(v=>!v.left&&v.cls===cls&&v.name.toLowerCase()===name.toLowerCase());
+    if(s){if(c[ix.parent])s.parent=c[ix.parent];if(ph)s.phone=ph;u++}
+    else{s={id:"s"+Date.now()+k,adm:(ad&&!S.st.some(x=>String(x.adm)===ad))?ad:nextAdm(),name,parent:c[ix.parent]||"",phone:ph,cls,pays:{}};S.st.push(s);a++}
+    for(const w in ix.wk){const v=c[ix.wk[w]];if(v){const n=parseFloat(v),m=isNaN(n)?WK:Math.max(0,Math.round(n));if(m)s.pays[w]=m}}});
+  return{a,u}}
+const upMsg=o=>o.a+o.u?`Added ${o.a}, updated ${o.u}`:"No students found. Check the file columns.";
+/* ---------- attendance ---------- */
+function attendanceStudents(){const u=me();return S.st.filter(s=>!s.left&&(u.role==="admin"?(ui.cls? s.cls===ui.cls:(!ui.grade||s.cls.startsWith(ui.grade+" "))):s.cls===u.cls));}
+function vAttendance(){const L=attendanceStudents(),d=ui.attDate||today(),present=attCount(L,d,"Present"),absent=attCount(L,d,"Absent"),late=attCount(L,d,"Late"),excused=attCount(L,d,"Excused");
+  return `<h2 class="sec">Daily attendance</h2><div class="card"><label>Attendance date</label><input id="attDate" type="date" value="${d}" onchange="ui.attDate=this.value;R()">${me().role==="admin"?`<label>Class / stream</label><select id="attClass" onchange="ui.cls=this.value||null;R()"><option value="">All classes</option>${CL.map(c=>`<option ${ui.cls===c?"selected":""}>${c}</option>`).join("")}</select>`:`<div class="m">Class: ${esc(me().cls)}</div>`}<div class="st" style="margin-top:10px"><div><b>✓ ${present}</b><span>Present</span></div><div><b>✗ ${absent}</b><span>Absent</span></div><div><b>${L.length-present-absent-late-excused}</b><span>Not marked</span></div></div><div class="m" style="margin-top:8px">${L.length} students</div><button class="btn" style="margin-top:10px" onclick="markAll()">✓ Mark everyone present</button><div class="m" style="margin-top:6px">Then tap ✗ for anyone absent. Tap a mark again to clear it.</div><button class="btn s" style="margin-top:8px" onclick="window.print()">Print attendance</button></div>
+  ${L.length?`<div class="led">`+L.sort((a,b)=>a.cls.localeCompare(b.cls)||a.name.localeCompare(b.name)).map(s=>{const st=attStatus(d,s.id);return `<div class="lr" style="cursor:default"><div style="flex:1;min-width:0"><b>${esc(s.name)}</b> ${["Late","Excused"].includes(st)?`<span class="pill pa">${st}</span>`:""}<div class="m">${esc(s.adm||"")} · ${s.cls}</div></div><button class="mk ${st==="Present"?"yes":""}" onclick="setAttendance('${s.id}','Present')" aria-label="Present ${esc(s.name)}">✓</button><button class="mk ${st==="Absent"?"no":""}" onclick="setAttendance('${s.id}','Absent')" aria-label="Absent ${esc(s.name)}">✗</button></div>`}).join("")+`</div>`:`<div class="card m">No active students in this selection.</div>`}<p class="m" style="margin-top:10px">Records are saved on this device. Use the backup feature regularly; shared multi-device syncing requires a secure online database.</p>`}
+function markAll(){const d=ui.attDate||today();S.attendance=S.attendance||{};let n=0;attendanceStudents().forEach(s=>{if(canMarkAttendance(s)&&attStatus(d,s.id)==="Unmarked"){S.attendance[attKey(d,s.id)]={status:"Present",updatedAt:Date.now(),updatedBy:me().name};n++}});if(!n)return T("Nobody left to mark");LOG("Attendance "+d+": "+n+" marked Present");save();const y=window.scrollY;R();window.scrollTo(0,y);T(n+" marked Present")}
+function setAttendance(id,status){const s=S.st.find(x=>x.id===id);if(!canMarkAttendance(s))return T("You do not have permission to mark this register");const d=ui.attDate||today(),k=attKey(d,id);S.attendance=S.attendance||{};if(attStatus(d,id)===status)status="Unmarked";if(status==="Unmarked")delete S.attendance[k];else S.attendance[k]={status,updatedAt:Date.now(),updatedBy:me().name};LOG("Attendance "+s.name+" "+d+": "+status);save();const y=window.scrollY;R();window.scrollTo(0,y)}
+/* ---------- parent communication and receipts ---------- */
+function parentMessage(id,type){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;const num=phoneWA(s.phone);if(!num)return T("Add a valid parent phone number first");let msg="";if(type==="attendance"){const d=ui.attDate||today(),st=attStatus(d,s.id);msg=`Dear ${s.parent||"Parent/Guardian"}, this is an attendance update for ${s.name} (Admission No. ${s.adm||"—"}) on ${d}: ${st}. Please contact the school if you need clarification. Thank you.`;}else{msg=`Dear ${s.parent||"Parent/Guardian"}, this is a fee statement reminder for ${s.name} (Admission No. ${s.adm||"—"}). Outstanding remedial fee balance: ${fmt(arrears(s))}. Please contact the school if you have any questions. Thank you.`;}window.open("https://wa.me/"+num+"?text="+encodeURIComponent(msg),"_blank","noopener");LOG("Prepared WhatsApp "+type+" message for "+s.name);save();}
+function receiptM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;const a=amt(s,ui.week);if(!a)return T("No payment recorded for the selected week");const nr={number:"OS-"+new Date().getFullYear()+"-"+String(Date.now()).slice(-6),student:s.name,adm:s.adm||"",class:s.cls,parent:s.parent||"",phone:s.phone||"",amount:a,date:today(),week:ui.week,method:"Not specified",createdAt:Date.now()};S.receipts=S.receipts||[];let r=S.receipts.find(x=>x.student===nr.student&&x.adm===nr.adm&&x.week===nr.week&&x.amount===nr.amount);if(!r){r=nr;S.receipts.push(r);LOG("Created receipt "+r.number+" for "+s.name);save()}M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><div id="receiptPrint" class="card" style="border:2px solid var(--acc)"><div style="text-align:center"><h2 style="font-family:var(--sf);margin:0">OSEMBO SCHOOL</h2><div class="m">PAYMENT RECEIPT</div></div><hr style="border:0;border-top:1px solid var(--line);margin:12px 0"><div><b>Receipt No:</b> ${esc(r.number)}</div><div><b>Date:</b> ${r.date}</div><div><b>Student:</b> ${esc(r.student)}</div><div><b>Admission No:</b> ${esc(r.adm)}</div><div><b>Class:</b> ${esc(r.class)}</div><div><b>Payment period:</b> Week ${r.week}</div><div style="font-size:22px;margin:14px 0"><b>Amount received: ${fmt(r.amount)}</b></div><div><b>Recorded method:</b> ${r.method}</div><div class="m" style="margin-top:16px">This receipt reflects a payment recorded in Osembo. It is not independent confirmation of an external M-Pesa transaction.</div></div><button class="btn" onclick="printRC($('#receiptPrint').outerHTML)">Print / Save receipt as PDF</button><button class="btn s" style="margin-top:8px" onclick="receiptWhatsApp('${s.id}','${r.number}',${r.amount})">Prepare WhatsApp receipt</button><button class="btn s" style="margin-top:8px" onclick="cm()">Close</button></div></div>`)}
+function receiptWhatsApp(id,number,amount){const s=S.st.find(x=>x.id===id),num=phoneWA(s?.phone);if(!num)return T("Add a valid parent phone number first");const msg=`Dear ${s.parent||"Parent/Guardian"}, payment receipt ${number} for ${s.name} (Admission No. ${s.adm||"—"}): ${fmt(amount)} recorded for Week ${ui.week} on ${today()}. Thank you.`;window.open("https://wa.me/"+num+"?text="+encodeURIComponent(msg),"_blank","noopener");}
+/* ---------- school fees (per term, per year) ---------- */
+const TF=750,PM=["M-Pesa","Cash","Bank","Cheque"];
+const fpAll=(s,y,t)=>S.fp.filter(x=>x.sid===s.id&&x.y===y&&x.t===t);
+const fpOk=(s,y,t)=>fpAll(s,y,t).filter(x=>!x.rev);
+const fPaid=(s,y,t)=>fpOk(s,y,t).reduce((a,x)=>a+x.a,0);
+const fStat=a=>a>=TF?["Fully Paid",""]:a>0?["Partially Paid","pa"]:["Not Paid","no"];
+const fLast=(s,y,t)=>fpOk(s,y,t).map(x=>x.d).sort().pop()||"";
+function fSum(L,y,t){const r={n:L.length,exp:L.length*TF,col:0,full:0,part:0,none:0};L.forEach(s=>{const a=fPaid(s,y,t);r.col+=a;a>=TF?r.full++:a>0?r.part++:r.none++});r.bal=r.exp-r.col;r.pct=r.exp?Math.round(r.col/r.exp*100):0;return r}
+const fScope=()=>{const u=me();return u.role==="admin"?(ui.fc?[ui.fc]:CL):[u.cls]};
+const fBase=()=>S.st.filter(s=>!s.left&&fScope().includes(s.cls));
+function fFilt(){const q=(ui.fq||"").toLowerCase(),f=ui.fs||"all",y=ui.fy,t=ui.ft;
+  return fBase().filter(s=>(!q||s.name.toLowerCase().includes(q)||String(s.adm||"").toLowerCase().includes(q))&&(f==="all"||fStat(fPaid(s,y,t))[0]===f)).sort((a,b)=>a.cls.localeCompare(b.cls)||a.name.localeCompare(b.name))}
+function fListHtml(){const L=fFilt(),y=ui.fy,t=ui.ft;if(!L.length)return `<div class="card m">No students match.</div>`;
+  return `<div class="m" style="margin-bottom:6px">${L.length} students</div><div class="led">`+L.map(s=>{const a=fPaid(s,y,t),[tx,k]=fStat(a),d=fLast(s,y,t);
+    return `<div class="lr" onclick="fdet('${s.id}')"><span style="width:10px;height:10px;border-radius:50%;background:${COL[s.cls]};flex:none"></span><div style="flex:1"><b>${esc(s.name)}</b><div class="m">Adm. ${esc(s.adm||"—")} · ${s.cls}</div><div class="m">Required ${fmt(TF)} · Paid ${fmt(a)} · Balance <b>${fmt(TF-a)}</b>${d?" · Last "+d:""}</div></div><span class="pill ${k}">${tx}</span></div>`}).join("")+`</div>`}
+function vFees(){const u=me(),ad=u.role==="admin",y=ui.fy=ui.fy||S.fy,t=ui.ft=ui.ft||S.ft,sm=fSum(fBase(),y,t),yrs=[];
+  for(let i=S.fy-2;i<=S.fy+1;i++)yrs.push(i);if(!yrs.includes(y))yrs.push(y);
+  const scope=ad?(ui.fc||"All classes"):u.cls;let cmp="";
+  if(ad&&!ui.fc){cmp=`<h3>Class comparison</h3>`+CL.map(c=>({c,r:fSum(inCls(c),y,t)})).sort((a,b)=>b.r.pct-a.r.pct||b.r.col-a.r.col).map((x,i)=>`<div class="card" style="--c:${COL[x.c]};cursor:pointer" onclick="ui.fc='${x.c}';R()"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${x.c}</b><b>${x.r.pct}%</b></div><div class="m">${fmt(x.r.col)} of ${fmt(x.r.exp)} · Balance ${fmt(x.r.bal)}</div><div class="m">${x.r.full} full · ${x.r.part} partial · ${x.r.none} unpaid · ${x.r.n} students</div><div class="bar"><i style="width:${x.r.pct}%"></i></div></div>`).join("")}
+  return `<h2 class="sec">School fees</h2><div class="prt"><b>Osembo School: fees report</b><div>${y} · Term ${t} · ${scope} · printed ${today()}</div></div>
+<div class="card noprt"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label>Year</label><select onchange="ui.fy=+this.value;R()">${yrs.map(v=>`<option ${v===y?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Term</label><select onchange="ui.ft=+this.value;R()">${[1,2,3].map(n=>`<option value="${n}" ${n===t?"selected":""}>Term ${n}</option>`).join("")}</select></div></div>${ad?`<label>Class</label><select onchange="ui.fc=this.value;R()"><option value="">All classes</option>${CL.map(c=>`<option ${ui.fc===c?"selected":""}>${c}</option>`).join("")}</select>`:`<div class="m">Your class: <b>${u.cls}</b></div>`}<div class="m">Fee: ${fmt(TF)} per student per term</div></div>
+<div class="card" style="border-top:3px solid var(--acc)"><div class="m">${scope} · Term ${t}, ${y}</div><div style="font:700 28px var(--sf)">${fmt(sm.col)} <span class="m">of ${fmt(sm.exp)}</span></div><div class="bar"><i style="width:${sm.pct}%"></i></div><div class="st" style="margin-top:12px"><div><b>${sm.n}</b><span>Students</span></div><div><b>${fmt(sm.exp)}</b><span>Expected</span></div><div><b>${fmt(sm.col)}</b><span>Collected</span></div></div><div class="st" style="margin-top:10px"><div><b>${fmt(sm.bal)}</b><span>Outstanding</span></div><div><b>${sm.full}</b><span>Fully paid</span></div><div><b>${sm.part}</b><span>Partial</span></div></div><div class="m" style="margin-top:8px;text-align:center">${sm.none} not paid</div></div>
+${cmp}<h3>Student fee records</h3><div class="noprt"><input id="fq" type="search" placeholder="Search name or admission number" value="${esc(ui.fq||"")}" oninput="ui.fq=this.value.trim();$('#flist').innerHTML=fListHtml()"><select onchange="ui.fs=this.value;R()" style="margin-top:0">${["all","Fully Paid","Partially Paid","Not Paid"].map(v=>`<option value="${v}" ${(ui.fs||"all")===v?"selected":""}>${v==="all"?"All statuses":v}</option>`).join("")}</select><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" onclick="fexp()">Export CSV</button><button class="btn s sm" onclick="window.print()">Print report</button>${ad?`<button class="btn s sm" onclick="fexpT()">Export transactions</button>`:""}</div></div><div id="flist">${fListHtml()}</div>`}
+function fdet(id){const s=S.st.find(x=>x.id===id);if(!canViewStudent(s))return;const y=ui.fy,t=ui.ft,ad=me().role==="admin",a=fPaid(s,y,t),[tx,k]=fStat(a),H=fpAll(s,y,t).slice().sort((p,q)=>q.bt-p.bt);
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><div style="font:700 21px var(--sf)">${esc(s.name)}</div><div class="m">Adm. ${esc(s.adm||"—")} · ${s.cls} · Term ${t}, ${y}</div>
+<div class="st card" style="margin-top:12px"><div><b>${fmt(TF)}</b><span>Required</span></div><div><b>${fmt(a)}</b><span>Paid</span></div><div><b>${fmt(TF-a)}</b><span>Balance</span></div></div><div style="margin-bottom:10px"><span class="pill ${k}">${tx}</span></div>
+<h3>Payment history</h3>${H.length?`<div class="led">`+H.map(x=>`<div class="lr ${x.rev?"rv":""}" style="cursor:default;display:block"><div style="display:flex;justify-content:space-between"><b>${fmt(x.a)}</b><span class="pill ${x.rev?"no":x.ver?"":"pa"}">${x.rev?"Reversed":x.ver?"Verified":"Unverified"}</span></div><div class="m">${x.d} · ${esc(x.m)}${x.ref?" · Ref "+esc(x.ref):""} · by ${esc(x.by)}</div>${x.rev?`<div class="m">Reversed by ${esc(x.rby)}: ${esc(x.rr)}</div>`:""}${ad&&!x.rev?`<div style="margin-top:6px;display:flex;gap:6px">${x.ver?"":`<button class="btn s sm" onclick="fver('${x.id}')">Verify</button>`}<button class="btn s sm" onclick="frevM('${x.id}')">Reverse</button></div>`:""}</div>`).join("")+`</div>`:`<div class="card m">No payments yet.</div>`}
+${canEdit(s.cls)&&a<TF?`<button class="btn" style="margin-top:12px" onclick="fpayM('${id}')">Record payment</button>`:""}<button class="btn s" style="margin-top:8px" onclick="cm()">Close</button></div></div>`)}
+function fpayM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;const b=TF-fPaid(s,ui.fy,ui.ft);if(b<=0)return T("Already fully paid");
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><h3>Record payment</h3><p class="m">${esc(s.name)} · Term ${ui.ft}, ${ui.fy} · Balance ${fmt(b)}</p><label>Amount (KSh)</label><input id="fa" type="number" inputmode="numeric" min="1" max="${b}" value="${b}"><label>Payment date</label><input id="fd" type="date" max="${today()}" value="${today()}"><label>Method</label><select id="fm">${PM.map(m=>`<option>${m}</option>`).join("")}</select><label>Transaction reference (M-Pesa code, bank slip, cheque no.)</label><input id="fr" style="text-transform:uppercase" placeholder="e.g. SHK4X7ABC2"><button class="btn" onclick="fsave('${id}')">Save payment</button><button class="btn s" style="margin-top:8px" onclick="fdet('${id}')">Cancel</button></div></div>`)}
+function fsave(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;const y=ui.fy,t=ui.ft,b=TF-fPaid(s,y,t),a=Math.round(+$("#fa").value||0),d=$("#fd").value,m=$("#fm").value,ref=$("#fr").value.trim().toUpperCase();
+  if(a<=0)return T("Enter an amount");if(a>b)return T("Amount is more than the balance of "+fmt(b));
+  if(!d||d>today())return T("Enter a valid payment date");
+  if(m==="M-Pesa"&&!/^[A-Z0-9]{10}$/.test(ref))return T("M-Pesa code must be 10 letters or numbers");
+  if(m!=="Cash"&&!ref)return T("Enter the transaction reference");
+  if(ref&&S.fp.some(x=>!x.rev&&x.ref===ref))return T("That reference is already recorded");
+  const ad=me().role==="admin";S.fp.push({id:"p"+Date.now()+Math.floor(Math.random()*1e3),sid:id,y,t,a,d,m,ref,by:me().name,bt:Date.now(),ver:ad?1:0});
+  LOG("Fees: "+fmt(a)+" from "+s.name+", Term "+t+" "+y);save();R();fdet(id);T("Payment saved")}
+const fFind=pid=>S.fp.find(x=>x.id===pid);
+function fver(pid){if(me().role!=="admin")return T("Only the administrator can verify payments");const x=fFind(pid);if(!x||x.rev)return;x.ver=1;LOG("Fees: payment verified "+fmt(x.a));save();R();fdet(x.sid)}
+function frevM(pid){if(me().role!=="admin")return T("Only the administrator can reverse payments");const x=fFind(pid);if(!x||x.rev)return;
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Reverse ${fmt(x.a)} payment?</h3><p class="m">The payment stays in the history marked Reversed and no longer counts toward the balance.</p><label>Reason</label><input id="rr"><button class="btn" onclick="frev('${pid}')">Reverse payment</button><button class="btn s" style="margin-top:8px" onclick="fdet('${x.sid}')">Cancel</button></div></div>`)}
+function frev(pid){if(me().role!=="admin")return;const x=fFind(pid),r=$("#rr").value.trim();if(!x||x.rev)return;if(!r)return T("Enter a reason");x.rev=1;x.rby=me().name;x.rr=r;x.rt=Date.now();LOG("Fees: reversed "+fmt(x.a)+" ("+r+")");save();R();fdet(x.sid)}
+function fexp(){const y=ui.fy,t=ui.ft,rows=[["Year","Term","Class","Adm","Name","Required","Paid","Balance","Last payment","Status"]];
+  fFilt().forEach(s=>{const a=fPaid(s,y,t);rows.push([y,"Term "+t,s.cls,s.adm||"",s.name,TF,a,TF-a,fLast(s,y,t),fStat(a)[0]])});
+  LOG("Exported fees report");save();dl("osembo-fees-"+y+"-term"+t+".csv",CSVX(rows),"text/csv")}
+function fexpT(){if(me().role!=="admin")return;const rows=[["Date","Year","Term","Class","Adm","Name","Amount","Method","Reference","Recorded by","Status"]];
+  S.fp.slice().sort((a,b)=>a.bt-b.bt).forEach(x=>{const s=S.st.find(v=>v.id===x.sid)||{};rows.push([x.d,x.y,"Term "+x.t,s.cls||"",s.adm||"",s.name||"",x.a,x.m,x.ref,x.by,x.rev?"Reversed: "+x.rr:x.ver?"Verified":"Unverified"])});
+  LOG("Exported fee transactions");save();dl("osembo-fee-transactions.csv",CSVX(rows),"text/csv")}
+function saveFPer(){if(me().role!=="admin")return;const y=Math.round(+$("#fyy").value),t=+$("#fyt").value;if(!(y>=2000&&y<=2100))return T("Enter a valid year");S.fy=ui.fy=y;S.ft=ui.ft=t;LOG("Fees period set: Term "+t+" "+y);save();R();T("Fees period saved")}
+
+/* ---------- academics ---------- */
+const EX=["Opening","Mid-term","End-term"];
+const SUBJ=[["eng","English",/^eng/],["kis","Kiswahili",/^(kis|swa)/],["mat","Mathematics",/^mat/],["sci","Integrated Science",/^(sci|int)/],["soc","Social Studies",/^soc/],["pre","Pre-Technical Studies",/^(pre|tech)/],["agr","Agriculture & Nutrition",/^agri/],["art","Creative Arts & Sports",/^(art|creat)/],["rel","Religious Education",/^(rel|cre|ire|hre)/]];
+const GR=[[90,"EE1"],[75,"EE2"],[58,"ME1"],[41,"ME2"],[31,"AE1"],[21,"AE2"],[11,"BE1"],[0,"BE2"]];
+const gr=v=>GR.find(g=>Math.round(v)>=g[0])[1],gk=g=>g[0]==="A"?"pa":g[0]==="B"?"no":"",r1=v=>Math.round(v*10)/10;
+const rkey=(s,y,t,e)=>y+"|"+t+"|"+e+"|"+s.id,rget=(s,y,t,e)=>S.res[rkey(s,y,t,e)]||null;
+const rcnt=r=>r?SUBJ.filter(x=>r[x[0]]!=null).length:0,rtot=r=>r?SUBJ.reduce((a,x)=>a+(r[x[0]]||0),0):0,rmean=r=>rcnt(r)?rtot(r)/rcnt(r):0;
+function rpos(s,y,t,e){const r=rget(s,y,t,e);if(!rcnt(r))return null;const m=rmean(r),L=inCls(s.cls).map(x=>rget(x,y,t,e)).filter(rcnt).map(rmean);return[L.filter(v=>v>m).length+1,Math.max(L.length,1)]}
+function DEMO(){if(!S.res){S.res={};let r=11;const q=()=>(r=(r*9301+49297)%233280)/233280;
+  S.st.filter(x=>x.demo).forEach(s=>{const b=45+q()*40;["Opening","Mid-term"].forEach((e,j)=>{const o={};SUBJ.forEach(x=>o[x[0]]=Math.max(5,Math.min(98,Math.round(b+j*3+(q()-.5)*30))));S.res[S.fy+"|"+S.ft+"|"+e+"|"+s.id]=o})})}
+  if(!S.announcements.length&&S.st.some(x=>x.demo))S.announcements.push({text:"Welcome to Osembo. Mid-term results are now on each student's profile and under the Academics tab.",date:today(),by:"Admin",cls:null})}
+function vAcad(){const u=me(),ad=u.role==="admin";ui.ac=ad?(ui.ac||CL[0]):u.cls;ui.ay=ui.ay||S.fy;ui.at=ui.at||S.ft;
+  if(!ui.ae)ui.ae=latestEx();
+  const c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae,can=canEdit(c),yrs=[];for(let i=S.fy-2;i<=S.fy+1;i++)yrs.push(i);if(!yrs.includes(y))yrs.push(y);
+  const rows=inCls(c).map(s=>{const r=rget(s,y,t,e);return{s,r,n:rcnt(r),m:rmean(r)}}),done=rows.filter(o=>o.n).sort((a,b)=>b.m-a.m),rest=rows.filter(o=>!o.n).sort((a,b)=>a.s.name.localeCompare(b.s.name)),
+  cmean=done.length?done.reduce((a,o)=>a+o.m,0)/done.length:0,
+  sa=SUBJ.map(x=>{const v=done.map(o=>o.r[x[0]]).filter(v=>v!=null);return[x[1],v.length?v.reduce((a,b)=>a+b,0)/v.length:null]}).filter(x=>x[1]!=null),
+  row=o=>{const p=o.n?done.findIndex(x=>x.m===o.m)+1:"–";return `<div class="lr" onclick="det('${o.s.id}')"><span class="ix">${p}</span><div style="flex:1;min-width:0"><b>${esc(o.s.name)}</b><div class="m">Adm. ${esc(o.s.adm||"—")}${o.n?" · Total "+rtot(o.r)+" · "+o.n+"/"+SUBJ.length+" subjects":" · No results yet"}</div></div>${o.n?`<div style="text-align:right"><b>${r1(o.m)}%</b><div><span class="pill ${gk(gr(o.m))}">${gr(o.m)}</span></div></div>`:""}</div>`};
+  return `<h2 class="sec">Academic performance</h2>${examBar()}
+<div class="card" style="border-top:3px solid var(--acc)"><div class="st"><div><b>${done.length?r1(cmean)+"%":"–"}</b><span>Class mean</span></div><div><b>${done.length}/${rows.length}</b><span>Results in</span></div><div><b>${done.length?esc(done[0].s.name.split(" ")[0]):"–"}</b><span>Top student</span></div></div></div>
+${can?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">${canMarks(c)?`<button class="btn sm" onclick="go('marks')">Enter marks</button>`:""}<button class="btn sm" onclick="insM()">🏆 Rank &amp; insights</button><button class="btn s sm" onclick="printAllRC(ui.ac)">Print all report cards</button></div>`:""}
+${sa.length?`<div class="card"><h3>Subject averages</h3><div class="sg">${sa.map(x=>`<div><div style="display:flex;justify-content:space-between"><span>${esc(x[0])}</span><b>${r1(x[1])}</b></div><div class="bar" style="margin:4px 0 12px;--c:${COL[c]}"><i style="width:${x[1]}%"></i></div></div>`).join("")}</div></div>`:""}
+${rows.length?`<div class="led">${done.concat(rest).map(row).join("")}</div>`:`<div class="card m">No students in this class yet.</div>`}`}
+function marksM(id){const s=S.st.find(x=>x.id===id);if(!s||!canMarks(s.cls))return;const r=rget(s,ui.ay,ui.at,ui.ae)||{};
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><h3>${esc(s.name)}</h3><p class="m">${ui.ae} · Term ${ui.at}, ${ui.ay} · marks out of 100. Leave blank if not sat.</p><div class="mg">${SUBJ.map(x=>`<div><label>${esc(x[1])}</label><input id="mk_${x[0]}" type="number" min="0" max="100" inputmode="decimal" value="${r[x[0]]??""}"></div>`).join("")}</div><button class="btn" onclick="saveMarks('${id}')">Save results</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function saveMarks(id){const s=S.st.find(x=>x.id===id);if(!s||!canMarks(s.cls))return;const r={};let bad=0;
+  SUBJ.forEach(x=>{const v=$("#mk_"+x[0]).value.trim();if(v==="")return;const n=+v;if(isNaN(n)||n<0||n>100)bad=1;else r[x[0]]=r1(n)});
+  if(bad)return T("Marks must be between 0 and 100");const k=rkey(s,ui.ay,ui.at,ui.ae);if(Object.keys(r).length)S.res[k]=r;else delete S.res[k];
+  LOG("Results: "+s.name+", "+ui.ae+" T"+ui.at+" "+ui.ay);save();cm();R();T("Results saved")}
+function parseRes(txt,cls){const rows=txt.replace(/^\uFEFF/,"").split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(/,|\t/).map(v=>v.trim().replace(/^"|"$/g,"")));
+  if(rows.length<2)return{err:"Add a header row and at least one student"};
+  const h=rows.shift().map(v=>v.toLowerCase().replace(/[^a-z0-9]/g,"")),ix={};SUBJ.forEach(x=>{const i=h.findIndex(v=>x[2].test(v));if(i>=0)ix[x[0]]=i});
+  if(!Object.keys(ix).length)return{err:"No subject columns found. Check the header row"};
+  const ia=h.findIndex(v=>/^adm/.test(v)),inm=h.findIndex(v=>/name/.test(v)),L=inCls(cls);let a=0,bad=0;const miss=[];
+  rows.forEach(c=>{const ad=ia>=0?(c[ia]||""):"",nm=inm>=0?(c[inm]||"").toLowerCase():"",s=L.find(x=>ad&&String(x.adm)===ad)||L.find(x=>nm&&x.name.toLowerCase()===nm);
+    if(!s){if(ad||nm)miss.push(c[inm]||ad);return}
+    const r=Object.assign({},rget(s,ui.ay,ui.at,ui.ae)||{});let any=0;
+    for(const k in ix){const v=(c[ix[k]]||"").trim();if(v==="")continue;const n=parseFloat(v);if(isNaN(n)||n<0||n>100){bad++;continue}r[k]=r1(n);any=1}
+    if(any){S.res[rkey(s,ui.ay,ui.at,ui.ae)]=r;a++}});
+  return{a,bad,miss}}
+const resMsg=o=>{const m=(o.err||"Updated "+o.a+" student"+(o.a===1?"":"s")+(o.miss.length?", "+o.miss.length+" not found in this class ("+o.miss.slice(0,3).join(", ")+")":"")+(o.bad?", "+o.bad+" invalid marks skipped":""));return o.err?m:m+" · tap 🏆 to rank them"};
+function upRes(i){const f=i.files[0];if(!f||!canMarks(ui.ac))return;const r=new FileReader();
+  r.onload=()=>{const o=parseRes(r.result,ui.ac);i.value="";if(!o.err){LOG("Uploaded results: "+ui.ac+", "+ui.ae+" T"+ui.at+" "+ui.ay);save()}R();T(resMsg(o))};r.onerror=()=>T("Could not read that file");r.readAsText(f)}
+function pasteRes(){if(!canMarks(ui.ac))return;M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Paste results</h3><p class="m">${ui.ac} · ${ui.ae}, Term ${ui.at} ${ui.ay}. First line is the header (Adm, Name, English, Kiswahili…), then one student per line. You can paste straight from a spreadsheet.</p><textarea id="rt" rows="8" style="font:13px monospace"></textarea><button class="btn" style="margin-top:8px" onclick="savePasteRes()">Save results</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function savePasteRes(){if(!canMarks(ui.ac))return;const o=parseRes($("#rt").value,ui.ac);if(!o.err){LOG("Pasted results: "+ui.ac+", "+ui.ae+" T"+ui.at+" "+ui.ay);save()}cm();R();T(resMsg(o))}
+function resSheet(){const c=ui.ac,rows=[["Adm","Name",...SUBJ.map(x=>x[1])]];
+  inCls(c).sort((a,b)=>a.name.localeCompare(b.name)).forEach(s=>{const r=rget(s,ui.ay,ui.at,ui.ae)||{};rows.push([s.adm||"",s.name,...SUBJ.map(x=>r[x[0]]??"")])});
+  dl("osembo-results-"+c.replace(" ","")+"-"+ui.ae+"-T"+ui.at+"-"+ui.ay+".csv",CSVX(rows),"text/csv")}
+function acadCard(s){const H=[];for(const k in S.res){const p=k.split("|");if(p[3]===s.id&&rcnt(S.res[k]))H.push({y:+p[0],t:+p[1],e:p[2],r:S.res[k]})}
+  H.sort((a,b)=>b.y-a.y||b.t-a.t||EX.indexOf(b.e)-EX.indexOf(a.e));
+  if(!H.length)return `<div class="card"><div class="m"><b>Academic performance</b></div><div class="m" style="margin-top:6px">No results recorded yet.</div>${canMarks(s.cls)?`<button class="btn s sm" style="margin-top:10px" onclick="ui.ay=S.fy;ui.at=S.ft;ui.ae=latestEx();marksM('${s.id}')">Enter marks</button>`:""}</div>`;
+  const L=H[0],m=rmean(L.r),ps=rpos(s,L.y,L.t,L.e),pv=H[1]?m-rmean(H[1].r):null;
+  return `<div class="card"><div class="m"><b>Academic performance</b> · ${L.e}, Term ${L.t} ${L.y}</div><div class="st" style="margin-top:6px"><div><b>${r1(m)}%</b><span>Mean${pv==null?"":" ("+(pv>=0?"▲ ":"▼ ")+r1(Math.abs(pv))+")"}</span></div><div><b>${ps[0]}/${ps[1]}</b><span>Class position</span></div><div><span class="pill ${gk(gr(m))}">${gr(m)}</span><span style="display:block;margin-top:4px">${rtot(L.r)} total</span></div></div>
+<div style="margin-top:10px">${SUBJ.filter(x=>L.r[x[0]]!=null).map(x=>{const v=L.r[x[0]];return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px"><span>${esc(x[1])}</span><span><b>${v}</b> <span class="pill ${gk(gr(v))}">${gr(v)}</span></span></div><div class="bar" style="margin:3px 0 8px;--c:${COL[s.cls]}"><i style="width:${v}%"></i></div>`}).join("")}</div>
+${H.length>1?`<div class="m" style="margin:8px 0 4px"><b>Previous results</b></div>`+H.slice(1,7).map(h=>{const p=rpos(s,h.y,h.t,h.e),mm=rmean(h.r);return `<div class="m" style="display:flex;justify-content:space-between"><span>${h.e}, T${h.t} ${h.y}</span><span>${r1(mm)}% · ${gr(mm)} · Pos ${p[0]}/${p[1]}</span></div>`}).join(""):""}<button class="btn s sm" style="margin-top:10px" onclick="reportM('${s.id}')">Report card</button>${canMarks(s.cls)?`<button class="btn s sm" style="margin:10px 0 0 6px" onclick="ui.ay=${L.y};ui.at=${L.t};ui.ae='${L.e}';marksM('${s.id}')">Edit marks</button>`:""}</div>`}
+
+/* ---------- report cards and ranking export ---------- */
+const rcHas=(s,y,t,e)=>rcnt(rget(s,y,t,e))>0;
+const ord=(y,t,e)=>y*100+t*10+EX.indexOf(e);
+const AB={eng:"Eng",kis:"Kis",mat:"Mat",sci:"Sci",soc:"S.St",pre:"Pre-T",agr:"Agri",art:"Arts",rel:"Rel"};
+const lvC=g=>g[0]==="E"?"#15803D":g[0]==="M"?"#1D4ED8":g[0]==="A"?"#B45309":"#B91C1C";
+const lvT=g=>g[0]==="E"?"Exceeding":g[0]==="M"?"Meeting":g[0]==="A"?"Approaching":"Below";
+const lvl=g=>`<span class="rc-lv" style="background:${lvC(g)}">${g}</span>`;
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+const tOf=(sj,c)=>((S.subjT||{})[sj+"|"+c]||"").trim();
+const tk=n=>String(n).trim().toLowerCase();
+function prevRes(s,y,t,e){const cur=ord(y,t,e);let b=null;for(const k in S.res){const p=k.split("|");if(p[3]!==s.id||!rcnt(S.res[k]))continue;const o=ord(+p[0],+p[1],p[2]);if(o<cur&&(!b||o>b.o))b={o,y:+p[0],t:+p[1],e:p[2],r:S.res[k]}}return b}
+function sPos(s,sj,y,t,e){const v=(rget(s,y,t,e)||{})[sj],L=inCls(s.cls).map(x=>(rget(x,y,t,e)||{})[sj]).filter(a=>a!=null);return[L.filter(a=>a>v).length+1,L.length]}
+function gradePos(s,y,t,e){const g=s.cls.split(" ")[0],P=live().filter(x=>x.cls.split(" ")[0]===g).map(x=>rget(x,y,t,e)).filter(rcnt).map(rmean),m=rmean(rget(s,y,t,e));return[P.filter(a=>a>m).length+1,P.length]}
+function cMeans(c,y,t,e){const o={};SUBJ.forEach(x=>o[x[0]]=avg(inCls(c).map(s=>(rget(s,y,t,e)||{})[x[0]]).filter(v=>v!=null)));return o}
+function topImproved(c,y,t,e){let b=null;inCls(c).forEach(s=>{const r=rget(s,y,t,e),p=prevRes(s,y,t,e);if(!rcnt(r)||!p)return;const g=rmean(r)-rmean(p.r);if(g>0&&(!b||g>b.g))b={id:s.id,g}});return b?b.id:null}
+function autoRemark(s,y,t,e){const r=rget(s,y,t,e);if(!rcnt(r))return"";const m=rmean(r),g=gr(m),p=prevRes(s,y,t,e),gain=p?m-rmean(p.r):null,cm=cMeans(s.cls,y,t,e),sj=SUBJ.filter(x=>r[x[0]]!=null);
+  let o=g[0]==="E"?"Outstanding performance. Keep up the excellent work.":g==="ME1"?"Very good performance. Aim even higher next time.":g==="ME2"?"Good effort. With more practice you can reach the next level.":g[0]==="A"?"Fair performance. More revision and regular practice are needed.":"Performance is below expectation. Extra support at home and regular remedial attendance are advised.";
+  if(gain!=null&&gain>=5)o+=" Commendable improvement of "+r1(gain)+" points since the last exam.";else if(gain!=null&&gain<=-5)o+=" Performance dropped by "+r1(-gain)+" points; please work to recover.";
+  if(sj.length>2){const st=sj.slice().sort((a,b)=>r[b[0]]-r[a[0]]);o+=" Strongest in "+st[0][1]+(r[st[st.length-1][0]]<m-12?"; needs to improve in "+st[st.length-1][1]:"")+"."}return o}
+const rcRemark=(s,y,t,e)=>(S.rem||{})[rkey(s,y,t,e)]||autoRemark(s,y,t,e);
+function rcBars(r,cm){const W=330,H=130,L0=20,B=18,pw=W-L0-4,sl=pw/SUBJ.length,ph=H-B-12,Y=v=>H-B-ph*v/100;let o=`<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">`;
+  [0,50,100].forEach(v=>o+=`<line x1="${L0}" x2="${W-4}" y1="${Y(v)}" y2="${Y(v)}" stroke="#d9d2bd" stroke-width=".6"/><text x="${L0-3}" y="${Y(v)+2.5}" font-size="7" text-anchor="end" fill="#555">${v}</text>`);
+  SUBJ.forEach((x,i)=>{const cx=L0+sl*i+sl/2,v=r[x[0]],c=cm[x[0]];
+    if(v!=null)o+=`<rect x="${cx-8.5}" y="${Y(v)}" width="8" height="${H-B-Y(v)}" fill="#0B4F4A"/><text x="${cx-4.5}" y="${Y(v)-2}" font-size="6.5" text-anchor="middle" fill="#111" font-weight="700">${v}</text>`;
+    if(c!=null)o+=`<rect x="${cx+.5}" y="${Y(c)}" width="8" height="${H-B-Y(c)}" fill="#B8892B"/>`;
+    o+=`<text x="${cx}" y="${H-6}" font-size="7" text-anchor="middle" fill="#111">${AB[x[0]]}</text>`});return o+`</svg>`}
+function rcTrend(s,y,t,e){const P=[];for(const k in S.res){const p=k.split("|");if(p[3]!==s.id||!rcnt(S.res[k]))continue;const o=ord(+p[0],+p[1],p[2]);if(o<=ord(y,t,e))P.push({o,y:+p[0],t:+p[1],e:p[2],m:rmean(S.res[k])})}
+  P.sort((a,b)=>a.o-b.o);const Q=P.slice(-6);Q.forEach(p=>{p.c=avg(inCls(s.cls).map(x=>rget(x,p.y,p.t,p.e)).filter(rcnt).map(rmean))});
+  const W=190,H=130,L0=20,B=24,pw=W-L0-12,ph=H-B-12,X=i=>L0+(Q.length<2?pw/2:pw*i/(Q.length-1)),Y=v=>H-B-ph*v/100;let o=`<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">`;
+  [0,50,100].forEach(v=>o+=`<line x1="${L0}" x2="${W-4}" y1="${Y(v)}" y2="${Y(v)}" stroke="#d9d2bd" stroke-width=".6"/><text x="${L0-3}" y="${Y(v)+2.5}" font-size="7" text-anchor="end" fill="#555">${v}</text>`);
+  const ln=(k,col,d)=>{const pts=Q.map((p,i)=>p[k]!=null?X(i)+","+Y(p[k]):"").filter(Boolean);return pts.length<2?"":`<polyline fill="none" stroke="${col}" stroke-width="1.6" ${d?'stroke-dasharray="3 2"':""} points="${pts.join(" ")}"/>`};
+  o+=ln("c","#B8892B",1)+ln("m","#0B4F4A");
+  Q.forEach((p,i)=>{if(p.c!=null)o+=`<circle cx="${X(i)}" cy="${Y(p.c)}" r="1.8" fill="#B8892B"/>`;o+=`<circle cx="${X(i)}" cy="${Y(p.m)}" r="2.5" fill="#0B4F4A"/><text x="${X(i)}" y="${Y(p.m)-5}" font-size="6.5" text-anchor="middle" font-weight="700" fill="#111">${r1(p.m)}</text><text x="${X(i)}" y="${H-12}" font-size="6.5" text-anchor="middle" fill="#111">${["Op","Mid","End"][EX.indexOf(p.e)]}</text><text x="${X(i)}" y="${H-4}" font-size="6" text-anchor="middle" fill="#555">T${p.t}${Q.some(z=>z.y!==Q[0].y)?" '"+String(p.y).slice(2):""}</text>`});
+  return o+`</svg>`}
+function rcHtml(s,y,t,e){e=e||ui.ae||EX[0];const r=rget(s,y,t,e);if(!rcnt(r))return `<div class="m" style="padding:10px">No ${esc(e)} results recorded for ${esc(s.name)} in Term ${t}, ${y}.</div>`;
+  const m=rmean(r),g=gr(m),tc=U(s.cls),ps=rpos(s,y,t,e),gp=gradePos(s,y,t,e),pv=prevRes(s,y,t,e),gain=pv?m-rmean(pv.r):null,rc=S.rc||{},cm=cMeans(s.cls,y,t,e),
+  cmm=avg(inCls(s.cls).map(x=>rget(x,y,t,e)).filter(rcnt).map(rmean)),ak=Object.keys(S.attendance).filter(k=>k.endsWith("|"+s.id)).map(k=>S.attendance[k].status),ap=ak.filter(a=>a==="Present"||a==="Late").length,aa=ak.filter(a=>a==="Absent").length,fb=TF-fPaid(s,y,t),
+  rib=(ps[0]<=3?`<span class="rc-rib">★ ${["1st","2nd","3rd"][ps[0]-1]} in class</span>`:"")+(topImproved(s.cls,y,t,e)===s.id?`<span class="rc-rib">▲ Most improved</span>`:""),
+  nx=rc.next?new Date(rc.next).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}):"";
+  return `<div class="rcpage"><div class="rc-h"><div class="rc-crest">O</div><div class="rc-t"><h2>OSEMBO SCHOOL</h2><div>${esc(rc.motto||"Learner progress report")}</div></div><div class="rc-crest" style="visibility:hidden">O</div></div>
+<div class="rc-ban">REPORT CARD · ${esc(e).toUpperCase()} EXAM · TERM ${t}, ${y}</div>
+<div class="rc-info"><div><span>Name:</span> <b>${esc(s.name)}</b>${rib}</div><div><span>Adm No:</span> <b>${esc(s.adm||"—")}</b></div><div><span>Class:</span> <b>${esc(s.cls)}</b></div><div><span>Class teacher:</span> <b>${esc(tc?tc.name:"")}</b></div></div>
+<div class="rc-sum"><div><b>${rtot(r)}</b><span>Total marks</span></div><div><b>${r1(m)}%</b><span>Mean</span></div><div><b>${lvl(g)}</b><span>${lvT(g)}</span></div><div><b>${ps[0]}/${ps[1]}</b><span>Class position</span></div><div><b>${gp[0]}/${gp[1]}</b><span>Grade ${esc(s.cls.split(" ")[0])} position</span></div><div><b style="color:${gain==null?"#555":gain>=0?"#15803D":"#B91C1C"}">${gain==null?"–":(gain>=0?"▲ ":"▼ ")+r1(Math.abs(gain))}</b><span>${pv?"vs "+pv.e+" T"+pv.t:"vs last exam"}</span></div></div>
+<table class="rt"><tr><th style="width:28%">Learning area</th><th>Marks</th><th>Level</th><th>Class mean</th><th>Subject position</th><th>Remark</th><th>Teacher</th></tr>${SUBJ.map(x=>{const v=r[x[0]],sp=v!=null?sPos(s,x[0],y,t,e):null;return `<tr><td>${esc(x[1])}</td><td><b>${v??"–"}</b></td><td>${v!=null?lvl(gr(v)):"–"}</td><td>${cm[x[0]]!=null?r1(cm[x[0]]):"–"}</td><td>${sp?sp[0]+" / "+sp[1]:"–"}</td><td class="l">${v!=null?lvT(gr(v)):"–"}</td><td class="l">${esc(tOf(x[0],s.cls))}</td></tr>`}).join("")}<tr class="tot"><td>Total / Mean</td><td>${rtot(r)}</td><td>${lvl(g)}</td><td>${cmm!=null?r1(cmm):"–"}</td><td>${ps[0]} / ${ps[1]}</td><td class="l" colspan="2">Mean ${r1(m)}%</td></tr></table>
+<div class="rc-ch"><div class="a"><h5>Marks vs class mean <span class="rc-lg"><i style="background:#0B4F4A"></i>${esc(s.name.split(" ")[0])} <i style="background:#B8892B"></i>Class mean</span></h5>${rcBars(r,cm)}</div><div class="b"><h5>Mean across exams <span class="rc-lg"><i style="background:#0B4F4A"></i>Learner <i style="background:#B8892B"></i>Class</span></h5>${rcTrend(s,y,t,e)}</div></div>
+<div class="rc-cm"><b>Class teacher’s comment:</b> ${esc(rcRemark(s,y,t,e))}</div><div class="rc-cm" style="margin-top:4px"><b>Head teacher’s comment:</b> ____________________________________________________________</div>
+<div class="rc-meta"><span>Attendance recorded: <b>${ap}</b> present, <b>${aa}</b> absent</span><span>Fees balance, Term ${t}: <b>${fmt(fb)}</b></span>${nx?`<span>Next term opens: <b>${nx}</b></span>`:""}</div>
+<div class="rc-sg"><div class="ln">Class teacher: ${esc(tc?tc.name:"")}</div><div class="ln">Head teacher${rc.head?": "+esc(rc.head):""}</div><div class="ln">Parent / Guardian</div><div class="rc-st">School stamp</div></div>
+<div class="rc-key">Levels: EE1 90–100 · EE2 75–89 · ME1 58–74 · ME2 41–57 · AE1 31–40 · AE2 21–30 · BE1 11–20 · BE2 0–10 &nbsp;|&nbsp; Printed ${today()}</div></div>`}
+function reportM(id){const s=S.st.find(x=>x.id===id);if(!canViewStudent(s))return;const y=ui.ay=ui.ay||S.fy,t=ui.at=ui.at||S.ft,e=ui.ae=ui.ae||latestEx(),has=rcHas(s,y,t,e);
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:92vh;overflow:auto;max-width:780px"><div class="fg" style="grid-template-columns:repeat(3,1fr)"><div><label>Year</label><select onchange="ui.ay=+this.value;reportM('${id}')">${yrsL(y).map(v=>`<option ${v===y?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Term</label><select onchange="ui.at=+this.value;reportM('${id}')">${[1,2,3].map(n=>`<option value="${n}" ${n===t?"selected":""}>Term ${n}</option>`).join("")}</select></div><div><label>Exam</label><select onchange="ui.ae=this.value;reportM('${id}')">${EX.map(v=>`<option ${v===e?"selected":""}>${v}</option>`).join("")}</select></div></div><div style="overflow-x:auto">${rcHtml(s,y,t,e)}</div>${has&&canEdit(s.cls)?`<label style="margin-top:10px;display:block">Class teacher’s comment (edit if you wish)</label><textarea id="rcm" rows="2" style="margin-top:4px">${esc(rcRemark(s,y,t,e))}</textarea><button class="btn s sm" style="margin-top:6px" onclick="saveRem('${id}')">Save comment</button>`:""}${has?`<button class="btn" style="margin-top:12px" onclick="printRC(rcHtml(S.st.find(x=>x.id==='${id}'),ui.ay,ui.at,ui.ae))">Print / Save as PDF</button>`:""}<button class="btn s" style="margin-top:8px" onclick="det('${id}')">Back to profile</button></div></div>`)}
+function saveRem(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;const v=$("#rcm").value.trim(),k=rkey(s,ui.ay,ui.at,ui.ae);if(v&&v!==autoRemark(s,ui.ay,ui.at,ui.ae))S.rem[k]=v;else delete S.rem[k];save();reportM(id);T("Comment saved")}
+function printAllRC(c){const u=me();if(!(u.role==="admin"||u.cls===c))return;const y=ui.ay||S.fy,t=ui.at||S.ft,e=ui.ae||latestEx(),L=inCls(c).filter(s=>rcHas(s,y,t,e)).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!L.length)return T("No "+e+" results for Term "+t+", "+y);LOG("Printed "+L.length+" "+e+" report cards for "+c);printRC(L.map(s=>rcHtml(s,y,t,e)).join(""))}
+/* ---------- results analysis: ranking, most improved, subjects and their teachers ---------- */
+function exRows(sc){const u=me(),ad=u.role==="admin",L=sc==="all"&&ad?live():inCls(ad?ui.ac:u.cls),y=ui.ay,t=ui.at,e=ui.ae;
+  const rows=L.map(s=>{const r=rget(s,y,t,e);return{s,r,n:rcnt(r),m:rmean(r),tot:rtot(r)}}).filter(o=>o.n).sort((a,b)=>b.m-a.m||a.s.name.localeCompare(b.s.name));
+  rows.forEach(o=>{o.pos=rows.findIndex(x=>x.m===o.m)+1;o.pv=prevRes(o.s,y,t,e);o.gain=o.pv?o.m-rmean(o.pv.r):null});return rows}
+function tMean(name,sj){const v=[],y=ui.ay,t=ui.at,e=ui.ae;CL.forEach(c=>{if(tk(tOf(sj,c))===tk(name))inCls(c).forEach(s=>{const x=(rget(s,y,t,e)||{})[sj];if(x!=null)v.push(x)})});return v.length?{m:avg(v),n:v.length,k:CL.filter(c=>tk(tOf(sj,c))===tk(name)).length}:null}
+function tMeanAll(name){const v=[],y=ui.ay,t=ui.at,e=ui.ae;CL.forEach(c=>SUBJ.forEach(x=>{if(tk(tOf(x[0],c))===tk(name))inCls(c).forEach(s=>{const m=(rget(s,y,t,e)||{})[x[0]];if(m!=null)v.push(m)})}));return avg(v)}
+function subStats(sc,rows){return SUBJ.map(x=>{const m=avg(rows.map(o=>o.r[x[0]]).filter(v=>v!=null));let names=[];
+    if(sc==="all"){const seen={};CL.forEach(c=>{const n=tOf(x[0],c);if(n&&!seen[tk(n)]){seen[tk(n)]=1;names.push(n)}})}else{const n=tOf(x[0],ui.ac);if(n)names=[n]}
+    return{x,m,n:rows.filter(o=>o.r[x[0]]!=null).length,T:names.map(n=>({n,tm:tMean(n,x[0]),ta:tMeanAll(n)}))}}).filter(o=>o.m!=null).sort((a,b)=>b.m-a.m)}
+function insM(){const u=me(),ad=u.role==="admin";if(!ad)ui.ac=u.cls;ui.ay=ui.ay||S.fy;ui.at=ui.at||S.ft;if(!ui.ae)ui.ae=latestEx();ui.iv=ui.iv||"rank";const sc=ad&&ui.isc==="all"?"all":"cls",rows=exRows(sc),c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae,vw=ui.iv,
+  vb=(k,l)=>`<button class="chip ${vw===k?"on":""}" onclick="ui.iv='${k}';insM()">${l}</button>`,arrow=g=>g==null?"":` <span class="m" style="color:${g>=0?"var(--ok)":"var(--no)"}">${g>=0?"▲":"▼"} ${r1(Math.abs(g))}</span>`;let body="";
+  if(!rows.length)body=`<div class="card m">No ${esc(e)} results for ${sc==="all"?"the school":esc(c)} in Term ${t}, ${y}. Enter marks in the Marks tab first.</div>`;
+  else if(vw==="rank"){const cm=avg(rows.map(o=>o.m));body=`<div class="card" style="border-top:3px solid var(--acc)"><div class="st"><div><b>${r1(cm)}%</b><span>Mean</span></div><div><b>${rows.length}</b><span>Ranked</span></div><div><b>${r1(rows[0].m)}%</b><span>Highest</span></div></div></div><div class="led one">${rows.map(o=>`<div class="lr" onclick="det('${o.s.id}')"><span class="ix" style="width:30px;font-size:17px">${o.pos===1?"🥇":o.pos===2?"🥈":o.pos===3?"🥉":o.pos}</span><div style="flex:1;min-width:0"><b>${esc(o.s.name)}</b><div class="m">${sc==="all"?o.s.cls+" · ":""}Total ${o.tot} · ${o.n}/${SUBJ.length} subjects</div></div><div style="text-align:right"><b>${r1(o.m)}%</b><div><span class="pill ${gk(gr(o.m))}">${gr(o.m)}</span>${arrow(o.gain)}</div></div></div>`).join("")}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn sm" onclick="rankCSV('${sc}')">Download ranking (CSV)</button>${sc==="cls"?`<button class="btn s sm" onclick="cm();printAllRC('${c}')">Print report cards</button>`:""}</div>`}
+  else if(vw==="imp"){const IM=rows.filter(o=>o.gain!=null).sort((a,b)=>b.gain-a.gain);
+    if(!IM.length)body=`<div class="card m">Nothing to compare yet. A student’s improvement is worked out against their previous exam, so it appears once they have results from two exams.</div>`;
+    else{const top=IM[0],up=IM.filter(o=>o.gain>0).slice(0,10),dn=IM.filter(o=>o.gain<0).reverse().slice(0,3),row=(o,i)=>`<div class="lr" onclick="det('${o.s.id}')"><span class="ix">${i+1}</span><div style="flex:1;min-width:0"><b>${esc(o.s.name)}</b><div class="m">${sc==="all"?o.s.cls+" · ":""}${r1(rmean(o.pv.r))}% (${esc(o.pv.e)} T${o.pv.t}) → ${r1(o.m)}%</div></div><b style="color:${o.gain>=0?"var(--ok)":"var(--no)"}">${o.gain>=0?"▲ +":"▼ "}${r1(o.gain)}</b></div>`;
+      body=(top.gain>0?`<div class="card" style="border-left:6px solid var(--acc)"><div class="m">⭐ Most improved student</div><div style="font:700 21px var(--sf)">${esc(top.s.name)}</div><div>${sc==="all"?top.s.cls+" · ":""}up <b>${r1(top.gain)}</b> points, from ${r1(rmean(top.pv.r))}% to ${r1(top.m)}%</div></div>`:`<div class="card m">Nobody has improved on their previous exam.</div>`)+(up.length?`<h3>Top improvers</h3><div class="led one">${up.map(row).join("")}</div>`:"")+(dn.length?`<h3 style="margin-top:14px">Biggest drops (need support)</h3><div class="led one">${dn.map(row).join("")}</div>`:"")}}
+  else{const ST=subStats(sc,rows),b=ST[0],w=ST[ST.length-1],tn=(o,full)=>o.T.length?o.T.map(z=>`<div class="m"><b>${esc(z.n)}</b>${z.tm?" · subject mean "+r1(z.tm.m)+"%"+(z.tm.k>1?" ("+z.tm.k+" classes)":""):""}${full&&z.ta!=null?" · overall mean "+r1(z.ta)+"%":""}</div>`).join(""):`<div class="m">No subject teacher set</div>`;
+    const tl={};CL.forEach(cl=>SUBJ.forEach(x=>{const n=tOf(x[0],cl);if(n)tl[tk(n)]=n}));const TM=Object.values(tl).map(n=>({n,m:tMeanAll(n)})).filter(o=>o.m!=null).sort((a,b)=>b.m-a.m);
+    body=`<div class="card" style="border-left:6px solid var(--ok)"><div class="m">🏆 Best performing subject</div><div style="font:700 21px var(--sf)">${esc(b.x[1])} · ${r1(b.m)}%</div>${tn(b,1)}</div>${ST.length>1?`<div class="card" style="border-left:6px solid var(--no)"><div class="m">Needs the most attention</div><div style="font:700 17px var(--sf)">${esc(w.x[1])} · ${r1(w.m)}%</div>${tn(w,0)}</div>`:""}<h3>All subjects, best to weakest</h3><div class="led one">${ST.map((o,i)=>`<div class="lr" style="cursor:default;display:block"><div style="display:flex;justify-content:space-between;gap:8px"><span><span class="ix" style="display:inline-block">${i+1}</span> <b>${esc(o.x[1])}</b></span><b>${r1(o.m)}%</b></div><div class="bar" style="margin:6px 0"><i style="width:${o.m}%"></i></div>${tn(o,0)}</div>`).join("")}</div>${TM.length?`<h3 style="margin-top:14px">Teachers’ means (all their subjects and classes)</h3><div class="led one">${TM.map((o,i)=>`<div class="lr" style="cursor:default"><span class="ix">${i+1}</span><div style="flex:1"><b>${esc(o.n)}</b></div><b>${r1(o.m)}%</b></div>`).join("")}</div>`:""}${canEdit(c)?`<button class="btn s sm" style="margin-top:12px" onclick="stM('${c}')">Set subject teachers for ${esc(c)}</button>`:""}`}
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:92vh;overflow:auto;max-width:760px"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">🏆 Results analysis</h3><button class="btn s sm" onclick="cm()">Close</button></div><div class="fg" style="grid-template-columns:repeat(3,1fr);margin-top:8px"><div><label>Year</label><select onchange="ui.ay=+this.value;insM()">${yrsL(y).map(v=>`<option ${v===y?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Term</label><select onchange="ui.at=+this.value;insM()">${[1,2,3].map(n=>`<option value="${n}" ${n===t?"selected":""}>Term ${n}</option>`).join("")}</select></div><div><label>Exam</label><select onchange="ui.ae=this.value;insM()">${EX.map(v=>`<option ${v===e?"selected":""}>${v}</option>`).join("")}</select></div></div>${ad?`<div class="chips"><button class="chip ${sc==="cls"?"on":""}" onclick="ui.isc='cls';insM()">${esc(c)}</button><button class="chip ${sc==="all"?"on":""}" onclick="ui.isc='all';insM()">Whole school</button></div>`:`<div class="m" style="margin-bottom:8px">${esc(c)}</div>`}<div class="chips">${vb("rank","Ranking")}${vb("imp","Most improved")}${vb("sub","Subjects & teachers")}</div>${body}</div></div>`)}
+function stM(c){if(!canEdit(c))return;const ad=me().role==="admin",names=[...new Set([...S.users.filter(u=>u.role==="teacher").map(u=>u.name),...Object.values(S.subjT||{})].filter(Boolean))],sib=c.split(" ")[0]+" "+(c.endsWith("Athi")?"Tana":"Athi");
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><h3>Subject teachers, ${esc(c)}</h3><p class="m">Type each teacher’s name. Use the same spelling for the same person so their mean is worked out across all their classes.</p><datalist id="stn">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist><div class="mg">${SUBJ.map(x=>`<div><label>${esc(x[1])}</label><input id="st_${x[0]}" list="stn" value="${esc(tOf(x[0],c))}"></div>`).join("")}</div>${ad?`<label style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" id="st_both" checked style="width:auto;margin:0"> Apply to ${sib} as well</label>`:""}<button class="btn" onclick="saveST('${c}')">Save subject teachers</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function saveST(c){if(!canEdit(c))return;const ad=me().role==="admin",both=ad&&$("#st_both")&&$("#st_both").checked,sib=c.split(" ")[0]+" "+(c.endsWith("Athi")?"Tana":"Athi"),T2=both?[c,sib]:[c];
+  SUBJ.forEach(x=>{const v=$("#st_"+x[0]).value.trim();T2.forEach(k=>{if(v)S.subjT[x[0]+"|"+k]=v;else delete S.subjT[x[0]+"|"+k]})});LOG("Set subject teachers: "+T2.join(" + "));save();cm();R();T("Subject teachers saved")}
+function saveRC(){if(me().role!=="admin")return;S.rc={motto:$("#rc_motto").value.trim(),next:$("#rc_next").value,head:$("#rc_head").value.trim()};LOG("Updated report card details");save();T("Report card details saved")}
+function rankCSV(sc){const rows=exRows(sc);if(!rows.length)return T("No results to rank for this exam");const y=ui.ay,t=ui.at,e=ui.ae,out=[["Position","Class","Adm","Name",...SUBJ.map(x=>x[1]),"Total","Mean %","Level","Change vs previous exam"]];
+  rows.forEach(o=>out.push([o.pos,o.s.cls,o.s.adm||"",o.s.name,...SUBJ.map(x=>o.r[x[0]]??""),o.tot,r1(o.m),gr(o.m),o.gain==null?"":r1(o.gain)]));
+  LOG("Exported ranking "+(sc==="all"?"whole school":ui.ac)+" "+e);save();dl("osembo-ranking-"+(sc==="all"?"school":ui.ac.replace(" ",""))+"-"+e+"-T"+t+"-"+y+".csv",CSVX(out),"text/csv")}
+function printRC(h){$("#pa").innerHTML=h;document.body.classList.add("prc");const d=()=>{document.body.classList.remove("prc");$("#pa").innerHTML=""};window.addEventListener("afterprint",d,{once:true});setTimeout(d,30000);setTimeout(()=>window.print(),60)}
+/* ---------- classes ---------- */
+const yrsL=y=>{const a=[];for(let i=S.fy-2;i<=S.fy+1;i++)a.push(i);if(!a.includes(y))a.push(y);return a};
+function lastRes(s){let b=null;for(const k in S.res){const p=k.split("|");if(p[3]!==s.id||!rcnt(S.res[k]))continue;const o={y:+p[0],t:+p[1],e:p[2],r:S.res[k]};if(!b||o.y>b.y||o.y===b.y&&(o.t>b.t||o.t===b.t&&EX.indexOf(o.e)>EX.indexOf(b.e)))b=o}return b}
+function openCP(c){ui.cp=c;ui.cq="";ui.ac=c;window.scrollTo(0,0);R()}
+function vClasses(){const u=me(),ad=u.role==="admin";if(!ad)ui.cp=u.cls;if(ui.cp&&!CL.includes(ui.cp))ui.cp=null;
+  if(ui.cp)return vCP(ui.cp);const d=today();
+  return `<h2 class="sec">Classes</h2><div class="m" style="margin-bottom:12px">Tap a class to see its students. Marks, register and remedial have their own tabs.</div><div class="cgrid">`+CL.map(c=>{const L=inCls(c),t=U(c),ms=L.map(lastRes).filter(Boolean).map(o=>rmean(o.r)),mn=ms.length?r1(ms.reduce((a,b)=>a+b,0)/ms.length)+"%":"–";
+    return `<button class="pick" style="--c:${COL[c]}" onclick="openCP('${c}')"><div class="av">${ICON}</div><div style="min-width:0"><h4>${c}</h4><div class="m">Class teacher: <b>${esc(t.name)}</b></div><div class="m">${L.length} students · Latest mean ${mn}</div><div class="m">${fmt(tot(c,"week"))} remedial this week · ✓ ${attCount(L,d,"Present")} present today</div></div><span class="go">›</span></button>`}).join("")+`</div><div class="card" style="margin-top:16px"><h3>Danger zone</h3><p class="m">Remove every student in the whole school, with their payments, results and attendance.</p><button class="btn dn sm" onclick="delM('ALL')">Delete all students</button></div>`}
+function vCP(c){const ad=me().role==="admin",L=inCls(c),t=U(c);
+  return (ad?`<button class="back" onclick="ui.cp=null;R()">‹ All classes</button>`:"")+`<div class="card" style="display:flex;align-items:center;gap:12px;border-top:3px solid ${COL[c]}"><div class="av" style="--c:${COL[c]}">${ICON}</div><div style="flex:1"><div style="font:700 22px var(--sf)">${c}</div><div class="m">Class teacher: <b>${esc(t.name)}</b> · ${L.length} students</div></div></div>`+cpStu(c,L)}
+function cpStu(c,L){const can=canEdit(c);
+  return (can?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" onclick="addSt('${c}')">+ Add student</button><button class="btn s sm" onclick="pasteC('${c}')">Paste list</button><span class="fbtn btn s sm">Upload list<input type="file" onchange="uplC(this,'${c}')"></span>${L.length?`<button class="btn dn sm" style="margin-left:auto" onclick="delM('${c}')">Delete all students</button>`:""}</div>`:"")+`<input type="search" placeholder="Search this class by name or admission number" value="${esc(ui.cq||"")}" oninput="ui.cq=this.value;$('#cpl').innerHTML=cpList(ui.cp)" style="margin-top:0"><div id="cpl">${cpList(c)}</div>`}
+function cpList(c){const q=(ui.cq||"").trim().toLowerCase(),A=inCls(c),L=A.filter(s=>!q||s.name.toLowerCase().includes(q)||String(s.adm||"").toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!L.length)return `<div class="card m">${A.length?"No student matches.":"No students yet. Use + Add student, Paste list or Upload list."}</div>`;
+  return `<div class="m" style="margin-bottom:6px">${L.length} students · remedial status is for Week ${S.week}</div><div class="led">`+L.map((s,i)=>{const lr=lastRes(s),m=lr?rmean(lr.r):0,[tx,k]=stat(amt(s,S.week));
+    return `<div class="lr" onclick="det('${s.id}')"><span class="ix">${i+1}</span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">Adm. ${esc(s.adm||"—")} · ${esc(s.parent||"No parent")}${s.phone?" · "+esc(s.phone):""}</div></div><div style="text-align:right">${lr?`<b>${r1(m)}%</b> <span class="pill ${gk(gr(m))}">${gr(m)}</span>`:`<span class="m">No results</span>`}<div style="margin-top:3px"><span class="pill ${k}">${tx}</span></div></div></div>`}).join("")+`</div>`}
+function addSt(c){if(!canEdit(c))return;M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Add student to ${c}</h3><label>Full name</label><input id="a1" autofocus><label>Admission number (optional)</label><input id="a0"><label>Parent name</label><input id="a2"><label>Parent phone</label><input id="a3" inputmode="tel"><button class="btn" onclick="saveSt('${c}')">Add student</button><button class="btn s" style="margin-top:8px" onclick="saveSt('${c}',1)">Add and enter another</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function saveSt(c,more){if(!canEdit(c))return;const n=$("#a1").value.trim(),p=$("#a3").value.replace(/\s/g,"");
+  if(!n)return T("Enter the student’s name");if(p&&!/^0[17]\d{8}$/.test(p))return T("Enter a valid phone, e.g. 0712345678");
+  if(inCls(c).some(s=>s.name.toLowerCase()===n.toLowerCase()))return T("That student is already in this class");
+  const adm=$("#a0").value.trim()||nextAdm();if(S.st.some(x=>String(x.adm)===adm))return T("That admission number is already in use");
+  S.st.push({id:"s"+Date.now(),adm,name:n,parent:$("#a2").value.trim(),phone:p,cls:c,pays:{}});LOG("Added "+n+" to "+c);save();R();if(more)addSt(c);else cm();T("Added "+n)}
+function pasteC(c){if(!canEdit(c))return;M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Paste class list for ${c}</h3><p class="m">One student per line: name, parent, phone. Names alone are fine. You can paste straight from a spreadsheet.</p><textarea id="pt" rows="8" style="font:13px monospace"></textarea><button class="btn" style="margin-top:8px" onclick="savePasteC('${c}')">Add students</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function savePasteC(c){if(!canEdit(c))return;const o=parseList($("#pt").value.replace(/\t/g,","),c);LOG("Pasted list for "+c+": "+upMsg(o));save();cm();R();T(upMsg(o))}
+function uplC(i,c){const f=i.files[0];if(!f||!canEdit(c))return;const r=new FileReader();r.onload=()=>{const o=parseList(r.result,c);i.value="";LOG("Uploaded list for "+c+": "+upMsg(o));save();R();T(upMsg(o))};r.onerror=()=>T("Could not read that file");r.readAsText(f)}
+function delM(c){const all=c==="ALL";if(all?me().role!=="admin":!canEdit(c))return;const n=S.st.filter(s=>!s.left&&(all||s.cls===c)).length;if(!n)return T("There are no students to delete");
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3 style="color:var(--no)">Delete ${all?"ALL students in the school":"all students in "+c}?</h3><p>This permanently removes <b>${n}</b> student${n===1?"":"s"} with their remedial payments, school fee records, results and attendance. It cannot be undone.</p>${me().role==="admin"?`<button class="btn s" onclick="bak()">Download a backup first</button>`:""}<label style="display:block;margin-top:12px">Type DELETE to confirm</label><input id="dc" autocomplete="off" placeholder="DELETE"><button class="btn dn" onclick="delAll('${c}')">Delete permanently</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function delAll(c){const all=c==="ALL";if(all?me().role!=="admin":!canEdit(c))return;if($("#dc").value.trim().toUpperCase()!=="DELETE")return T("Type DELETE to confirm");
+  const ids=new Set(S.st.filter(s=>!s.left&&(all||s.cls===c)).map(s=>s.id));
+  S.st=S.st.filter(s=>!ids.has(s.id));S.fp=S.fp.filter(x=>!ids.has(x.sid));Object.keys(S.res).forEach(k=>{if(ids.has(k.split("|")[3]))delete S.res[k]});Object.keys(S.attendance).forEach(k=>{if(ids.has(k.split("|")[1]))delete S.attendance[k]});
+  LOG("Deleted "+ids.size+" students"+(all?" (whole school)":" from "+c));save();cm();R();T(ids.size+" students deleted")}
+
+/* ---------- ranking ---------- */
+/* ---------- home and more ---------- */
+const LINES=["Every learner counts, every day.","Small steps each day build strong results.","A well-kept register is a well-run school.","Thank you for the work you do for our learners.","Good records today save time tomorrow.","Teaching makes all other work possible.","Make today a good day for a child."];
+function hRes(q){return q&&q.trim()?sRows(findS(q),q):""}
+function hsrch(v){ui.hq=v;sGo(v,"#hres")}
+function annHtml(){const u=me(),ad=u.role==="admin",A=S.announcements.map((a,i)=>({...a,i})).filter(a=>!a.cls||ad||a.cls===u.cls).reverse().slice(0,6);
+  return `<h3>📢 Announcements</h3>`+(A.length?A.map(a=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div style="white-space:pre-wrap">${esc(a.text)}</div><div class="m">${esc(a.date||"")} · ${esc(a.by||"")} · ${a.cls?esc(a.cls):"Whole school"} · <a href="#" onclick="shareAnn(${a.i});return false" style="color:var(--tx)">WhatsApp</a>${ad||a.by===u.name?` · <a href="#" onclick="delAnn(${a.i});return false" style="color:var(--no)">Delete</a>`:""}</div></div>`).join(""):`<div class="m">No announcements yet.</div>`)+`<textarea id="annT" rows="2" placeholder="${ad?"Post an announcement for the whole school":"Post an announcement for "+esc(u.cls)}"></textarea><button class="btn sm" style="margin-top:8px" onclick="postAnn()">Post announcement</button>`}
+function postAnn(){const u=me(),t=$("#annT").value.trim();if(!t)return T("Type an announcement first");S.announcements.push({text:t,date:today(),by:u.name,cls:u.role==="admin"?null:u.cls});LOG("Posted announcement");save();R();T("Announcement posted")}
+function shareAnn(i){const a=S.announcements[i];if(a)window.open("https://wa.me/?text="+encodeURIComponent(a.text),"_blank","noopener")}
+function delAnn(i){const u=me(),a=S.announcements[i];if(!a||!(u.role==="admin"||a.by===u.name))return;S.announcements.splice(i,1);LOG("Deleted announcement");save();R()}
+function vHome(){const u=me(),ad=u.role==="admin",h=new Date().getHours(),g=h<12?"Good morning":h<17?"Good afternoon":"Good evening",d=today(),
+  L=S.st.filter(s=>!s.left&&(ad||s.cls===u.cls)),mk=L.filter(s=>attStatus(d,s.id)!=="Unmarked").length,pc=L.length?Math.round(mk/L.length*100):0,
+  np=L.filter(s=>amt(s,S.week)>=WK).length,rp=L.length?Math.round(np/L.length*100):0,ex=latestEx(),inR=L.filter(s=>rcnt(rget(s,S.fy,S.ft,ex))).length,mp=L.length?Math.round(inR/L.length*100):0,
+  fc=L.reduce((a,s)=>a+fPaid(s,S.fy,S.ft),0),fp=L.length?Math.round(fc/(L.length*TF)*100):0,
+  tc=(go,t,m,p)=>`<button class="tcard" onclick="go('${go}')"><b>${t}</b><div class="m">${m}</div><div class="bar"><i style="width:${p}%"></i></div></button>`;
+  return `<div class="hgrid"><div class="welcome a-w"><div class="mono" style="margin:0 auto 10px;width:54px;height:54px;font-size:30px">O</div><div style="font-size:13px;opacity:.85">${new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})}</div><div style="font-size:24px;font-weight:700;margin:6px 0">${g}, ${esc(u.name)}</div><div style="opacity:.9">Welcome to Osembo</div><div style="margin-top:12px;font-style:italic;color:var(--acc)">“${LINES[Math.floor(Date.now()/864e5)%LINES.length]}”</div></div>
+<div class="card a-s"><b>Find a student</b><input id="hq" type="search" placeholder="Name, admission number, parent or phone" value="${esc(ui.hq||"")}" oninput="hsrch(this.value)" onkeydown="skey(event)" style="margin:8px 0 0"><div id="hres">${hRes(ui.hq)}</div></div>
+<div class="tiles t4 a-t">${tc("attendance","✓ Register",mk+" of "+L.length+" marked today",pc)}${tc("class","💰 Remedial",S.hol[S.week]?"No collection this week":np+" of "+L.length+" paid, week "+S.week,S.hol[S.week]?0:rp)}${ad||canMarks(u.cls)?tc("marks","📝 Marks",ex+": "+inR+" of "+L.length+" results in",mp):tc("academics","📝 Academics",ex+": "+inR+" of "+L.length+" results in",mp)}${tc("fees","🎓 School fees","Term "+S.ft+": "+fp+"% collected",fp)}</div>
+<div class="card a-n" style="border-top:3px solid var(--acc)"><div class="m">${ad?"Total students, whole school":"Students in "+esc(u.cls)}</div><div style="font:700 40px var(--sf)">${L.length}</div>${ad?`<div class="st" style="margin-top:8px">${["7","8","9"].map(x=>`<div><b>${L.filter(s=>s.cls.startsWith(x+" ")).length}</b><span>Grade ${x}</span></div>`).join("")}</div>`:""}</div>
+<div class="card a-a">${annHtml()}</div></div>`}
+/* ---------- marks upload tab ---------- */
+function examBar(){const ad=me().role==="admin",c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae;
+  return `<div class="card"><div class="fg"><div><label>Year</label><select onchange="ui.ay=+this.value;R()">${yrsL(y).map(v=>`<option ${v===y?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Term</label><select onchange="ui.at=+this.value;R()">${[1,2,3].map(n=>`<option value="${n}" ${n===t?"selected":""}>Term ${n}</option>`).join("")}</select></div><div><label>Exam</label><select onchange="ui.ae=this.value;R()">${EX.map(v=>`<option ${v===e?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Class</label>${ad?`<select onchange="ui.ac=this.value;R()">${CL.map(v=>`<option ${v===c?"selected":""}>${v}</option>`).join("")}</select>`:`<div style="padding:11px 0"><b>${esc(c)}</b></div>`}</div></div></div>`}
+function vMarks(){const u=me(),ad=u.role==="admin";ui.ac=ad?(ui.ac||CL[0]):u.cls;ui.ay=ui.ay||S.fy;ui.at=ui.at||S.ft;if(!ui.ae)ui.ae=latestEx();ui.ms=SUBJ.some(x=>x[0]===ui.ms)?ui.ms:SUBJ[0][0];
+  const c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae,sj=ui.ms;
+  if(!canMarks(c))return `<h2 class="sec">Marks</h2><div class="warn"><b>Marks entry is switched off for your account.</b><div>Ask the administrator to turn it on under Admin.</div></div>`;
+  const L=inCls(c).sort((a,b)=>a.name.localeCompare(b.name)),cur=SUBJ.find(x=>x[0]===sj),cnt=x=>L.filter(s=>((rget(s,y,t,e)||{})[x[0]])!=null).length;
+  return `<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="sec">Marks</h2><button class="hm" onclick="insM()" aria-label="Rank students and insights" title="Rank students and insights" style="font-size:22px">🏆</button></div>${examBar()}
+<div class="chips sc">${SUBJ.map(x=>`<button class="chip ${x[0]===sj?"on":""}" onclick="mSub('${x[0]}')">${esc(x[1])} <span class="mc" data-s="${x[0]}">${cnt(x)}/${L.length}</span></button>`).join("")}</div>
+<div class="card" style="padding:10px 14px;border-top:3px solid var(--acc)"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(cur[1])}</b><span class="m" id="mst"></span></div><div class="bar" style="margin-top:8px"><i id="mbar" style="width:0"></i></div></div>
+${L.length?`<div class="led one">${L.map((s,i)=>{const v=(rget(s,y,t,e)||{})[sj];return `<div class="lr" style="cursor:default;padding:8px 12px"><span class="ix">${i+1}</span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">Adm. ${esc(s.adm||"—")}</div></div><span id="gd_${s.id}" class="pill ${v!=null?gk(gr(v)):"nc"}" style="min-width:38px;text-align:center">${v!=null?gr(v):"–"}</span><input class="mi" id="bg_${s.id}" data-i="${i}" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="–" value="${v??""}" onfocus="this.select()" onkeydown="mkey(event,${i})" onchange="mchg(this)"></div>`}).join("")}</div>
+<div class="m" style="margin:10px 2px">Type a mark (0 to 100) and press <b>Enter</b> to go to the next student. After the last student, Enter opens the next subject. Marks save as you go. Leave a box empty if the student did not sit.</div>
+<button class="btn" onclick="mNext()">Next subject ›</button>`:`<div class="card m">No students in this class yet. Add them in the Classes tab.</div>`}
+<details class="card" style="margin-top:12px"><summary><b>Upload from a file instead</b></summary><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><span class="fbtn btn sm">Upload results (CSV)<input type="file" accept=".csv,.txt,.tsv,text/csv" onchange="upRes(this)"></span><button class="btn s sm" onclick="pasteRes()">Paste from spreadsheet</button><button class="btn s sm" onclick="resSheet()">Download template</button></div><div class="m" style="margin-top:8px">The template has your class list. Fill in marks, then upload it. Blank cells are left alone.</div></details>`}
+function mStats(){const c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae,sj=ui.ms,L=inCls(c),V=L.map(s=>(rget(s,y,t,e)||{})[sj]).filter(v=>v!=null),el=document.getElementById("mst"),bar=document.getElementById("mbar");
+  if(el)el.textContent=V.length+" of "+L.length+" entered"+(V.length?" · mean "+r1(V.reduce((a,b)=>a+b,0)/V.length):"");if(bar)bar.style.width=(L.length?Math.round(V.length/L.length*100):0)+"%";
+  document.querySelectorAll(".mc").forEach(n=>{const x=n.dataset.s;n.textContent=L.filter(s=>((rget(s,y,t,e)||{})[x])!=null).length+"/"+L.length})}
+function mchg(el){const id=el.id.slice(3),s=S.st.find(x=>x.id===id);if(!s||!canMarks(s.cls))return false;const sj=ui.ms,k=rkey(s,ui.ay,ui.at,ui.ae),v=el.value.trim().replace(",","."),r=Object.assign({},S.res[k]||{}),gd=document.getElementById("gd_"+id);
+  if(v===""){if(r[sj]==null){el.classList.remove("bad");return true}delete r[sj]}
+  else{const n=+v;if(isNaN(n)||n<0||n>100){el.classList.add("bad");T("Marks must be between 0 and 100");return false}r[sj]=r1(n);el.value=r[sj]}
+  el.classList.remove("bad");if(Object.keys(r).length)S.res[k]=r;else delete S.res[k];
+  if(gd){const x=r[sj];gd.textContent=x!=null?gr(x):"–";gd.className="pill "+(x!=null?gk(gr(x)):"nc")}
+  const lk=[ui.ac,sj,ui.ae,ui.at,ui.ay].join("|");if(ui.mlog!==lk){ui.mlog=lk;LOG("Marks: "+ui.ac+", "+SUBJ.find(x=>x[0]===sj)[1]+", "+ui.ae+" T"+ui.at+" "+ui.ay)}
+  save();mStats();return true}
+function mkey(e,i){if(e.key==="Enter"||e.key==="ArrowDown"){e.preventDefault();if(e.key==="Enter"&&!mchg(e.target))return;const nx=document.querySelector('.mi[data-i="'+(i+1)+'"]');if(nx){nx.focus();return}if(e.key==="Enter")mNext()}
+  else if(e.key==="ArrowUp"){e.preventDefault();const pv=document.querySelector('.mi[data-i="'+(i-1)+'"]');if(pv)pv.focus()}}
+function mSub(code){ui.ms=code;ui.mfocus=1;R()}
+function mNext(){const i=SUBJ.findIndex(x=>x[0]===ui.ms);if(i<SUBJ.length-1){T("Next: "+SUBJ[i+1][1]);mSub(SUBJ[i+1][0])}else T("All subjects done ✓")}
+function mFocus(){const a=Array.from(document.querySelectorAll(".mi")),f=a.find(x=>!x.value)||a[0];if(f)f.focus()}
+function togMarks(id){if(me().role!=="admin")return;const u=U(id);if(!u||u.role!=="teacher")return;u.marks=u.marks===false?true:false;
+  LOG("Marks upload "+(u.marks===false?"switched off":"switched on")+" for "+u.name+" ("+u.cls+")");save();R();T("Marks upload "+(u.marks===false?"off":"on")+" for "+u.name)}
+
+/* ---------- admin ---------- */
+function vAdm(){
+  return bakWarn()+`<div class="card"><b>${S.preview?"🟡 Preview mode":"✅ Activated"}</b><div class="m">${S.preview?`Fee not paid. Pay KSh ${FEE} to Till ${TILL} to activate.`:`Paid to Buy Goods Till ${TILL}`}</div></div><h3>Remedial cash handover by class teacher</h3>`+
+  S.users.filter(u=>u.role==="teacher").map(u=>{const c=tot(u.cls,"term"),h=hnd(u.cls);
+    return `<div class="card row" style="--c:${COL[u.cls]};flex-wrap:wrap"><div style="flex:1;min-width:150px"><b>${esc(u.name)}</b> <span class="m">${u.cls}</span><div class="m">${u.email?"Login: "+esc(u.email):"<b>No login email yet. Tap Rename to add one.</b>"}</div><div class="m">Collected ${fmt(c)} · Handed in ${fmt(h)} · Gap <b>${fmt(c-h)}</b></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn s sm" onclick="handM('${u.id}')">Handover</button><button class="btn s sm" onclick="renameM('${u.id}')">Rename</button><button class="btn s sm" onclick="togMarks('${u.id}')" style="${u.marks===false?'border-color:var(--no);color:var(--no)':''}">Marks: ${u.marks===false?"Off":"On"}</button><button class="btn s sm" onclick="resetT('${u.id}')">Reset</button></div></div>`}).join("")+
+`<div class="card"><h3>Fees period (KSh ${TF} per student per term)</h3><label>Academic year</label><input id="fyy" type="number" value="${S.fy}"><label>Current term</label><select id="fyt">${[1,2,3].map(n=>`<option value="${n}" ${S.ft===n?"selected":""}>Term ${n}</option>`).join("")}</select><button class="btn sm" onclick="saveFPer()">Set current period</button></div>
+<div class="card"><h3>Term setup</h3><label>Weekly fee (KSh)</label><input id="fee" type="number" value="${WK}"><label>Week 1 starts on</label><input id="st" type="date" value="${S.start||""}"><div class="m" style="margin-bottom:6px">Tap a week to mark it as no collection (holiday)</div><div class="chips">${Array.from({length:W},(_,i)=>`<button class="chip ${S.hol[i+1]?"on":""}" onclick="hol(${i+1},this)">${i+1}</button>`).join("")}</div><button class="btn sm" onclick="saveTerm()">Save term setup</button><p class="m" style="margin-top:10px">Current week: ${S.week}</p><button class="btn s sm" onclick="nextWk()">Start next week</button></div>
+<div class="card"><h3>Report card details</h3><label>School motto (printed under the school name)</label><input id="rc_motto" value="${esc((S.rc||{}).motto||"")}"><label>Head teacher’s name</label><input id="rc_head" value="${esc((S.rc||{}).head||"")}"><label>Next term opens on</label><input id="rc_next" type="date" value="${esc((S.rc||{}).next||"")}"><button class="btn sm" onclick="saveRC()">Save report card details</button></div>
+<div class="card"><h3>Subject teachers</h3><p class="m">Choose a class and name who teaches each subject. This powers the best-subject and teacher-mean analysis and the teacher column on report cards.</p><div class="chips">${CL.map(c=>`<button class="chip" onclick="stM('${c}')">${c}</button>`).join("")}</div></div>
+<div class="card"><h3>New school year</h3><p class="m">Moves Grade 8 to 9 and Grade 7 to 8, archives Grade 9 leavers, and clears weeks and payments. Download a backup first.</p><button class="btn s sm" onclick="promoM()">Promote all grades</button></div>
+<div class="card"><h3>Backup</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onclick="bak()">Download backup</button><span class="fbtn btn s sm">Restore from file<input type="file" onchange="rest(this)"></span></div></div>
+<h3>Activity log</h3><div class="led">${S.log.slice(0,25).map(x=>`<div class="lr" style="cursor:default;display:block"><b>${esc(x.m)}</b><div class="m">${esc(x.u)} · ${new Date(x.t).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</div></div>`).join("")||`<div class="lr m">Nothing yet.</div>`}</div>
+<div class="card" style="margin-top:12px"><b>Demo data</b><p class="m">Sample students and payments are loaded so you can try Osembo.</p><button class="btn s sm" onclick="clearDemo()">Clear demo students</button></div>`}
+function hol(w,el){S.hol[w]=!S.hol[w];save();el.classList.toggle("on")}
+function saveTerm(){if(me().role!=="admin")return;S.fee=WK=Math.max(1,Math.round(+$("#fee").value||50));S.start=$("#st").value;LOG("Term setup saved, fee "+fmt(WK));save();R();T("Term setup saved")}
+function handM(id){const u=U(id),g=Math.max(0,tot(u.cls,"term")-hnd(u.cls));M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Cash handed in, ${u.cls}</h3><p class="m">From ${esc(u.name)}</p><label>Amount received (KSh)</label><input id="ha" type="number" inputmode="numeric" value="${g}"><button class="btn" onclick="saveHand('${id}')">Record handover</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function saveHand(id){const u=U(id),a=Math.round(+$("#ha").value||0);if(me().role!=="admin"||a<=0)return T("Enter an amount");S.hand.push({cls:u.cls,a,t:Date.now()});LOG("Handover "+fmt(a)+" from "+u.cls);save();cm();R();T("Handover recorded")}
+function promoM(){M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Promote all grades?</h3><p class="m">Grade 9 students are archived, Grade 8 moves to 9, Grade 7 moves to 8. Weeks, payments and handovers are cleared. This cannot be undone, so download a backup first.</p><button class="btn" onclick="promote()">Yes, promote</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function promote(){if(me().role!=="admin")return;let n=0;S.st.forEach(s=>{if(s.left)return;const[g,sm]=s.cls.split(" ");if(g==="9")s.left=1;else s.cls=(+g+1)+" "+sm;s.pays={};n++});S.week=1;ui.week=1;S.hand=[];S.hol={};LOG("Year-end promotion, "+n+" students");save();cm();R();T("Promoted "+n+" students")}
+function dl(n,t,m){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;document.body.appendChild(a);a.click();a.remove();T("Downloading "+n)}
+function bak(){S.lastBak=Date.now();LOG("Backup downloaded");save();dl("osembo-backup-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify(S),"application/json")}
+function rest(i){const f=i.files[0];if(!f||me().role!=="admin")return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.users||!d.st)throw 0;S=d;fix();save();R();T("Backup restored")}catch(e){T("That is not an Osembo backup")}i.value=""};r.readAsText(f)}
+function exp(){const u=me(),ad=u.role==="admin",wk=Array.from({length:W},(_,i)=>i+1),rows=[["Class","Adm","Name","Parent","Phone",...wk.map(w=>"Week "+w),"Total","Owes"]];
+  live().filter(s=>ad?(!ui.cls||s.cls===ui.cls):s.cls===u.cls).sort((a,b)=>a.cls.localeCompare(b.cls)||a.name.localeCompare(b.name)).forEach(s=>rows.push([s.cls,s.adm||"",s.name,s.parent||"",s.phone||"",...wk.map(w=>amt(s,w)||""),sum(s.pays),arrears(s)]));
+  LOG("Exported report");save();dl("osembo-report.csv",CSVX(rows),"text/csv")}
+function CSVX(rows){return rows.map(r=>r.map(v=>{v=String(v);if(/^[=+\-@]/.test(v)&&isNaN(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}).join(",")).join("\n")}
+function qk(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;if(amt(s,ui.week)>=WK)delete s.pays[ui.week];else s.pays[ui.week]=WK;LOG(s.name+" week "+ui.week+": "+(amt(s,ui.week)?"paid":"cleared"));save();R()}
+function editM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;const ad=me().role==="admin";ui.cf=null;
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><h3>Edit student</h3><label>Full name</label><input id="e1" value="${esc(s.name)}"><label>Admission number</label><input id="e0" value="${esc(s.adm||"")}"><label>Parent / guardian name</label><input id="e2" value="${esc(s.parent||"")}"><label>Parent phone</label><input id="e3" value="${esc(s.phone||"")}">${ad?`<label>Class (change it to transfer)</label><select id="e4">${CL.map(c=>`<option ${c===s.cls?"selected":""}>${c}</option>`).join("")}</select>`:""}<button class="btn" onclick="saveEdit('${id}')">Save changes</button><button class="btn s" style="margin-top:8px" onclick="leftM('${id}')">Mark as left school</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function saveEdit(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;const n=$("#e1").value.trim(),p=$("#e3").value.replace(/\s/g,""),c=$("#e4")?$("#e4").value:s.cls;
+  if(!n)return T("Enter a name");if(p&&!/^0[17]\d{8}$/.test(p))return T("Enter a valid phone");const adm=$("#e0")?$("#e0").value.trim():s.adm;if(!adm)return T("Enter an admission number");if(S.st.some(x=>x.id!==id&&String(x.adm)===adm))return T("That admission number is already in use");
+  if(inCls(c).some(x=>x.id!==id&&x.name.toLowerCase()===n.toLowerCase()))return T("That name is already in that class");
+  LOG(c!==s.cls?n+": moved "+s.cls+" to "+c:"Edited "+n);s.name=n;s.adm=adm;s.parent=$("#e2").value.trim();s.phone=p;s.cls=c;save();cm();R();T("Saved")}
+function leftM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;if(ui.cf!==id){ui.cf=id;return T("Tap Mark as left school again to confirm")}ui.cf=null;s.left=1;LOG(s.name+" marked as left");save();cm();R();T("Marked as left")}
+function renameM(id){const u=U(id);M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Class teacher for ${u.cls}</h3><label>Teacher name</label><input id="tn" value="${esc(u.name)}"><label>Login email (the teacher uses this to log in)</label><input id="tem" type="email" value="${esc(u.email||"")}"><button class="btn" onclick="saveName('${id}')">Save</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+function saveName(id){const n=$("#tn").value.trim(),em=$("#tem").value.trim().toLowerCase();if(!n)return T("Enter a name");if(em&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))return T("Enter a valid email");const u=U(id);u.name=n;u.email=em;save();cm();R();T("Saved")}
+async function resetT(id){if(me().role!=="admin")return;const u=U(id);if(!u.email)return T("Add the teacher's login email first");const {error}=await sb.auth.resetPasswordForEmail(u.email,{redirectTo:window.location.href});T(error?"Could not send the reset email":"Reset email sent to "+u.email)}
+function nextWk(){if(me().role!=="admin"||S.week>=W)return;S.week++;save();ui.week=S.week;R()}
+function clearDemo(){if(me().role!=="admin")return;S.st=S.st.filter(s=>!s.demo);S.fp=S.fp.filter(x=>S.st.some(s=>s.id===x.sid));Object.keys(S.res).forEach(k=>{if(!S.st.some(s=>s.id===k.split("|")[3]))delete S.res[k]});save();R();T("Demo students cleared")}
+
+function R(){const a=$("#app");a.innerHTML=!ui.sess?vLogin():vMain();if(ui.tab==="marks"&&ui.sess&&typeof mStats==="function")mStats();if(ui.mfocus){ui.mfocus=0;setTimeout(mFocus,30)}}
+boot();
+</script></body></html>
