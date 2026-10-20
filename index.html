@@ -212,7 +212,7 @@ function skipAct(){S.act=1;S.pend=null;S.preview=1;save();T("Preview mode. Admin
 function approve(){S.act=1;S.preview=0;S.pend=null;save();T("Activated. Log in as Admin with one-time code 111111");R()}
 
 /* ---------- login (Supabase email accounts, invite only) ---------- */
-let LOGIN_MSG="",RECOVERY=0;
+let LOGIN_MSG="",RECOVERY=location.hash.includes("type=recovery")?1:0;
 function vLogin(){
   if(RECOVERY) return hero()+`<div class="wrap"><div class="card"><h3>Choose a new password</h3><label>New password (6+ characters)</label><input id="npw" type="password" autocomplete="new-password"><button class="btn" onclick="setNewPw()">Save password</button></div></div>`;
   return hero()+`<div class="wrap"><div class="card"><h3>Log in</h3>${LOGIN_MSG?`<div class="warn">${esc(LOGIN_MSG)}</div>`:""}<label>Email</label><input id="em" type="email" autocomplete="username" inputmode="email"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><button class="btn" onclick="login()">Log in</button><button class="btn s sm" style="margin-top:10px;width:100%" onclick="forgot()">Forgot password? Email me a reset link</button></div><p class="m">Accounts are created by the school admin. Contact the admin if you don't have one.</p></div>`;
@@ -232,10 +232,11 @@ async function setNewPw(){
   const pw=$("#npw").value;if(pw.length<6)return T("Password needs at least 6 characters");
   const {error}=await sb.auth.updateUser({password:pw});
   if(error)return T("Could not save the password. Request a new reset link.");
-  RECOVERY=0;T("Password saved");
+  RECOVERY=0;history.replaceState(null,"",location.pathname);T("Password saved");
   const {data}=await sb.auth.getSession();if(data.session)await enter(data.session.user.email);
 }
 async function enter(email){
+  if(RECOVERY)return;
   await load();S.act=1;S.preview=0;
   const e=email.toLowerCase();
   if(ADMIN_EMAIL&&e===ADMIN_EMAIL.toLowerCase()){const a=S.users.find(x=>x.role==="admin");if(a)a.email=ADMIN_EMAIL}
@@ -246,6 +247,7 @@ async function enter(email){
 async function logout(){await sb.auth.signOut();ui.sess=null;R()}
 async function boot(){
   const {data}=await sb.auth.getSession();
+  if(RECOVERY)return R();
   if(data.session)await enter(data.session.user.email);else R();
 }
 sb.auth.onAuthStateChange(async(event,session)=>{
