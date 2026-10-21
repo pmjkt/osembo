@@ -1,0 +1,6 @@
+{
+  "appId": "ke.osembo.app",
+  "appName": "Osembo",
+  "webDir": "www",
+  "server": { "androidScheme": "https" }
+}

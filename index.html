@@ -2,6 +2,12 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Osembo</title>
+<meta name="theme-color" content="#0B4F4A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <style>
 :root{--bg:#F6F1E4;--card:#FFFDF8;--tx:#1F2A37;--mut:#6B6559;--pri:#0B4F4A;--acc:#B8892B;--line:#E3DAC4;--ok:#15803D;--okb:#DCFCE7;--no:#B91C1C;--nob:#FEE2E2;--pa:#A16207;--pab:#FEF3C7;--sf:Georgia,"Times New Roman",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1B1A;--card:#162826;--tx:#F1EBDD;--mut:#A9A18E;--line:#2C4442;--acc:#D4A646;--ok:#86EFAC;--okb:#14532D;--no:#FCA5A5;--nob:#7F1D1D;--pa:#FDE68A;--pab:#713F12}}
@@ -124,9 +130,35 @@ table.rt{width:100%;border-collapse:collapse;font-size:10.5px}.rt th{background:
 .rc-key{font-size:8px;color:#555;margin-top:5px;text-align:center}
 .rc-rib{display:inline-block;background:#B8892B;color:#fff;border-radius:3px;padding:0 5px;font-weight:700;font-size:8.5px;margin-left:5px;vertical-align:middle}
 @media print{.rcpage{margin:0!important}}
+@media print{.nav{display:none!important}}
+input,select,textarea{font-size:16px}
+.sheet{max-height:92vh;overflow:auto}
+.wrap{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:9;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav button{flex:1;min-width:0;background:none;border:0;border-top:3px solid transparent;padding:7px 2px 6px;color:var(--mut);font:600 11px system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.nav button span{font-size:20px;line-height:1}
+.nav button.on{color:var(--tx);border-top-color:var(--acc)}
+.seg{display:flex;background:var(--line);border-radius:8px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;color:var(--mut);padding:8px;border-radius:6px;font:600 14px system-ui,sans-serif;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px #0002}
+.row2{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:10px 14px;font-size:14px;border-radius:8px}
+details.card summary::after{content:"▾";float:right;color:var(--mut)}
+details[open]>summary::after{content:"▴"}
+@media(max-width:899px){
+.sec{font-size:20px;margin-bottom:10px}
+.hm{width:36px;height:36px}
+.card{padding:12px}
+.lr{padding:10px 12px}
+.pick{padding:12px;margin-bottom:10px}.pick h4{font-size:18px}.av{width:42px;height:42px}
+.mk{width:40px;height:40px;font-size:19px}
+.welcome{padding:16px 14px}
+.tcard{padding:10px 12px}
+}
 </style></head><body>
 <div id="app"></div><div id="modal"></div><div id="toast"></div><div id="pa"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
 <script>
 let WK=50;const TILL="3563482",FEE=150,W=13,PREVIEW=false,NOLOGIN=false;
 const CL=["7 Athi","7 Tana","8 Athi","8 Tana","9 Athi","9 Tana"];
@@ -167,10 +199,13 @@ function seed(){
   const us=[{id:"admin",name:"Admin",role:"admin",code:"111111"}].concat(CL.map(c=>({id:c,name:"Teacher "+c,role:"teacher",cls:c,code:code6()})));
   return{act:0,pend:null,users:us,st,week:4}
 }
-const SB_URL="https://drjwvbggjioqtruyxbnp.supabase.co";
-const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyand2YmdnamlvcXRydXl4Ym5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDUxODMsImV4cCI6MjEwODA4MTE4M30.HoH45uNZqLeh_W-qVqXpT87JKbul6s5h9GsVX-L3xx8";
+const CFG=window.OSEMBO||{};
+const SB_URL=(CFG.SB_URL||"").trim();
+const SB_KEY=(CFG.SB_KEY||"").trim();
 const SCHOOL_ID="osembo-main";
-const ADMIN_EMAIL="pm7huo@gmail.com"; // replace with the admin's login email
+const WEB_URL=(CFG.WEB_URL||"").trim();
+const ADMIN_EMAIL=(CFG.ADMIN_EMAIL||"").trim();
+if(!SB_URL||!SB_KEY||!window.supabase){document.getElementById("app").innerHTML='<div style="padding:24px;font:16px system-ui;line-height:1.5"><h2>Osembo setup is not finished</h2><p>Open <b>config.js</b> in your GitHub repository and fill in your Supabase address and key. If they are already filled in, check your internet connection and reload.</p></div>';throw new Error("Osembo: config.js is empty or the login library did not load")}
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let ONLINE=false;
 async function load(){
@@ -195,7 +230,7 @@ function save(){
     .then(({error})=>{if(error){console.error("Save to server failed",error);T("Could not save to server. Check your connection.")}});
 }
 function T(m){const t=$("#toast");t.textContent=m;t.style.opacity=1;clearTimeout(T.h);T.h=setTimeout(()=>t.style.opacity=0,2800)}
-function M(h){$("#modal").innerHTML=h}
+function M(h){$("#modal").innerHTML=h;document.body.style.overflow=h?"hidden":""}
 function cm(){M("")}
 const hero=()=>`<div class="hero"><div style="font-size:36px;font-weight:800">Osembo</div><div style="opacity:.9">Weekly fee collection · KSh ${WK} per student</div></div>`;
 
@@ -212,10 +247,13 @@ function skipAct(){S.act=1;S.pend=null;S.preview=1;save();T("Preview mode. Admin
 function approve(){S.act=1;S.preview=0;S.pend=null;save();T("Activated. Log in as Admin with one-time code 111111");R()}
 
 /* ---------- login (Supabase email accounts, invite only) ---------- */
+const IN_APP=()=>!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())||matchMedia("(display-mode: standalone)").matches;
+function appLink(){if(IN_APP()||!/Android/i.test(navigator.userAgent)||!location.protocol.startsWith("http"))return"";
+  return `<div class="card" style="margin-top:12px"><b>Get the Android app</b><div class="m" style="margin:4px 0 10px">Installs like any app and opens faster.</div><a class="btn sm" style="display:inline-block;text-decoration:none;text-align:center" href="Osembo.apk" download>Download Osembo.apk</a></div>`}
 let LOGIN_MSG="",RECOVERY=location.hash.includes("type=recovery")?1:0;
 function vLogin(){
   if(RECOVERY) return hero()+`<div class="wrap"><div class="card"><h3>Choose a new password</h3><label>New password (6+ characters)</label><input id="npw" type="password" autocomplete="new-password"><button class="btn" onclick="setNewPw()">Save password</button></div></div>`;
-  return hero()+`<div class="wrap"><div class="card"><h3>Log in</h3>${LOGIN_MSG?`<div class="warn">${esc(LOGIN_MSG)}</div>`:""}<label>Email</label><input id="em" type="email" autocomplete="username" inputmode="email"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><button class="btn" onclick="login()">Log in</button><button class="btn s sm" style="margin-top:10px;width:100%" onclick="forgot()">Forgot password? Email me a reset link</button></div><p class="m">Accounts are created by the school admin. Contact the admin if you don't have one.</p></div>`;
+  return hero()+`<div class="wrap"><div class="card"><h3>Log in</h3>${LOGIN_MSG?`<div class="warn">${esc(LOGIN_MSG)}</div>`:""}<label>Email</label><input id="em" type="email" autocomplete="username" inputmode="email"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><button class="btn" onclick="login()">Log in</button><button class="btn s sm" style="margin-top:10px;width:100%" onclick="forgot()">Forgot password? Email me a reset link</button></div><p class="m">Accounts are created by the school admin. Contact the admin if you don't have one.</p>${appLink()}</div>`;
 }
 async function login(){
   const email=$("#em").value.trim(),pw=$("#pw").value;
@@ -225,7 +263,7 @@ async function login(){
 }
 async function forgot(){
   const e=$("#em").value.trim();if(!e)return T("Type your email above first");
-  const {error}=await sb.auth.resetPasswordForEmail(e,{redirectTo:window.location.href});
+  const {error}=await sb.auth.resetPasswordForEmail(e,{redirectTo:WEB_URL||window.location.href});
   T(error?"Could not send the email. Check the address.":"If that email has an account, a reset link is on its way.");
 }
 async function setNewPw(){
@@ -242,6 +280,8 @@ async function enter(email){
   if(ADMIN_EMAIL&&e===ADMIN_EMAIL.toLowerCase()){const a=S.users.find(x=>x.role==="admin");if(a)a.email=ADMIN_EMAIL}
   const u=S.users.find(x=>x.email&&x.email.toLowerCase()===e);
   if(!u){LOGIN_MSG="This account is not set up for Osembo. Ask the school admin.";await sb.auth.signOut();return R()}
+  const {data:sub}=await sb.from("subscriptions").select("paid_until").eq("school_id",SCHOOL_ID).maybeSingle();
+  if(!sub||new Date(sub.paid_until)<new Date()){LOGIN_MSG="Osembo's subscription has expired. Please contact the administrator to renew.";await sb.auth.signOut();return R()}
   LOGIN_MSG="";ui.sess=u.id;ui.tab="home";if(u.role==="teacher")ui.cls=u.cls;ui.week=S.week;R();
 }
 async function logout(){await sb.auth.signOut();ui.sess=null;R()}
@@ -258,35 +298,39 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 
 /* ---------- main ---------- */
 const ICON='<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>';
-const tab=(k,l)=>`<button class="${ui.tab===k?"on":""}" onclick="go('${k}')">${l}</button>`;
-const HOUSE='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg>';
-function go(k){cm();ui.tab=k;ui.q="";ui.hq="";ui.cq="";if(k==="classes"&&me().role==="admin")ui.cp=null;if(k==="class"&&me().role==="admin"){ui.grade=null;ui.cls=null}R();window.scrollTo(0,0)}
+const nv=(k,i,l)=>`<button class="${ui.tab===k?"on":""}" onclick="go('${k}')"><span>${i}</span>${l}</button>`;
+const MENU='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+function go(k){cm();ui.hq="";ui.cq="";
+  if(k==="class"){k="money";ui.mo="rem"}else if(k==="fees"){k="money";ui.mo="fees"}else if(k==="academics"){k="marks";ui.mv="res"}
+  ui.tab=k;if(k==="classes"&&me().role==="admin")ui.cp=null;R();window.scrollTo(0,0)}
 function home(){go("home")}
+function menuM(){const u=me(),ad=u.role==="admin";
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">Menu</h3><button class="btn s sm" onclick="cm()" aria-label="Close">✕</button></div>${NOLOGIN?`<label style="display:block;margin-top:10px">Signed in as (testing mode)</label><select onchange="cm();swap(this.value)">${opts().replace('value="'+ui.sess+'"','value="'+ui.sess+'" selected')}</select>`:`<div class="m" style="margin:10px 0">${esc(u.email||u.name)}</div>`}${ad?`<button class="btn s" style="margin-bottom:8px" onclick="go('adm')">⚙ Admin settings</button>`:""}${NOLOGIN?"":appLink().replace(/ style="margin-top:12px"/,' style="margin:0 0 8px"')}${NOLOGIN?"":`<button class="btn s" onclick="cm();logout()">Log out</button>`}</div></div>`)}
 function vMain(){const u=me(),ad=u.role==="admin";if(!ad){ui.cls=u.cls;ui.grade=u.cls.split(" ")[0];if(ui.tab==="adm")ui.tab="home"}
-  const who=`<button class="btn g sm" onclick="logout()">Log out</button>`;
-  return `<div class="hd"><div class="logo" onclick="home()" style="cursor:pointer"><div class="mono">O</div><div><div class="ttl">Osembo</div><div style="font-size:12px;opacity:.9">${ad?"Administrator":"Class teacher, "+u.cls}</div></div></div><div style="display:flex;gap:8px;align-items:center"><button class="hm" onclick="openSearch()" aria-label="Search students">${SRCH}</button><button class="hm" onclick="home()" aria-label="Home">${HOUSE}</button>${who}</div></div>
-${S.preview?`<div class="warn" style="border-radius:0;font-size:13px">${NOLOGIN?"Testing mode: login and activation are switched off.":"Preview mode: activation fee not paid yet."}</div>`:""}
-<div class="tabs">${tab("home","Home")}${tab("classes",ad?"Classes":"My Class")}${tab("attendance","Register")}${tab("class","Remedial")}${tab("fees","Fees")}${tab("academics","Academics")}${tab("marks","Marks")}${ad?tab("adm","Admin"):""}</div>
-<div class="wrap">${ui.tab==="home"?vHome():ui.tab==="class"?vClassTab():ui.tab==="attendance"?vAttendance():ui.tab==="fees"?vFees():ui.tab==="academics"?vAcad():ui.tab==="marks"?vMarks():ui.tab==="classes"?vClasses():ui.tab==="adm"&&ad?vAdm():vHome()}</div>${ui.tab==="classes"&&ui.cp&&canEdit(ui.cp)?`<button class="fab" onclick="addSt('${ui.cp}')" aria-label="Add student">+</button>`:""}`}
-function remChips(){return `<div class="chips sc"><button class="chip ${!ui.cls?"on":""}" onclick="setC(null)">All classes</button>${CL.map(c=>`<button class="chip ${ui.cls===c?"on":""}" onclick="setC('${c}')">${c}</button>`).join("")}</div>`}
-function vClassTab(){const ad=me().role==="admin";return `<h2 class="sec">Remedial</h2>`+(ad?remChips():"")+(ad&&!ui.cls?vRemAll():vView())}
+  const t=ui.tab,body=t==="home"?vHome():t==="classes"?vClasses():t==="attendance"?vAttendance():t==="marks"?vMarksTab():t==="money"?vMoney():t==="adm"&&ad?vAdm():vHome();
+  return `<div class="hd"><div class="logo" onclick="home()" style="cursor:pointer"><div class="mono">O</div><div><div class="ttl">Osembo</div><div style="font-size:12px;opacity:.9">${ad?"Administrator":"Class teacher · "+esc(u.cls)}</div></div></div><div style="display:flex;gap:8px">${t!=="home"?`<button class="hm" onclick="openSearch()" aria-label="Search students">${SRCH}</button>`:""}<button class="hm" onclick="menuM()" aria-label="Menu">${MENU}</button></div></div>
+${S.preview&&!NOLOGIN?`<div class="warn" style="border-radius:0;font-size:13px">Preview mode: activation fee not paid yet.</div>`:""}
+<div class="wrap">${body}</div>
+<div class="nav">${nv("home","🏠","Home")}${nv("classes","👥",ad?"Classes":"My class")}${nv("attendance","✓","Register")}${nv("marks","📝","Marks")}${nv("money","💰","Money")}</div>`}
+const clsSel=()=>`<select onchange="setC(this.value||null)" style="margin:0 0 12px"><option value="">All classes</option>${CL.map(c=>`<option ${ui.cls===c?"selected":""}>${c}</option>`).join("")}</select>`;
+function vMoney(){ui.mo=ui.mo||"rem";const ad=me().role==="admin";
+  return `<div class="seg"><button class="${ui.mo==="rem"?"on":""}" onclick="ui.mo='rem';R()">Remedial</button><button class="${ui.mo==="fees"?"on":""}" onclick="ui.mo='fees';R()">School fees</button></div>`+(ui.mo==="fees"?vFees():(ad?clsSel():"")+(ad&&!ui.cls?vRemAll():vView()))}
 function recentReceipts(){const u=me(),R=(S.receipts||[]).filter(r=>u.role==="admin"||r.class===u.cls).slice(-5).reverse();if(!R.length)return"";
   return `<h3 style="margin-top:16px">Recent receipts</h3><div class="led one">${R.map(r=>`<div class="lr" style="cursor:default"><div style="flex:1"><b>${esc(r.number)}</b><div class="m">${esc(r.student)} · ${esc(r.date)}</div></div><b>${fmt(r.amount)}</b></div>`).join("")}</div>`}
 function vRemAll(){const p=ui.per,L=CL.map(c=>({c,t:tot(c,p),n:inCls(c).length,o:inCls(c).reduce((a,s)=>a+arrears(s),0)})).sort((a,b)=>b.t-a.t),mx=Math.max(1,L[0].t),D=live().map(s=>({s,ar:arrears(s)})).filter(x=>x.ar>0).sort((a,b)=>b.ar-a.ar);
   return vTotals()+`<div class="chips"><button class="chip ${p==="week"?"on":""}" onclick="ui.per='week';R()">This week</button><button class="chip ${p==="term"?"on":""}" onclick="ui.per='term';R()">This term</button></div>`+
   L.map((x,i)=>`<div class="card" style="--c:${COL[x.c]};cursor:pointer" onclick="setC('${x.c}')"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${x.c}</b><b>${fmt(x.t)}</b></div><div class="m">${x.n} students · still owed ${fmt(x.o)}</div><div class="bar"><i style="width:${Math.round(x.t/mx*100)}%"></i></div></div>`).join("")+
-  `<h3 style="margin-top:16px">Defaulters (${D.length})</h3><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><button class="btn sm" onclick="exp()">Export CSV (Excel)</button><button class="btn s sm" onclick="window.print()">Print or save PDF</button></div>`+
+  `<h3 style="margin-top:16px">Defaulters (${D.length})</h3><div style="margin-bottom:10px"><button class="btn s sm" onclick="exp()">Export CSV</button></div>`+
   (D.length?`<div class="led one">`+D.slice(0,60).map(({s,ar})=>`<div class="lr" onclick="det('${s.id}')"><span style="width:10px;height:10px;border-radius:50%;background:${COL[s.cls]};flex:none"></span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">${s.cls} · ${esc(s.parent||"")}</div></div><div style="text-align:right"><b>${fmt(ar)}</b><div style="margin-top:4px">${s.phone?`<a class="pill" href="tel:${esc(s.phone)}" onclick="event.stopPropagation()" style="text-decoration:none">Call</a> <a class="pill" href="#" onclick="event.stopPropagation();parentMessage('${s.id}','balance');return false" style="text-decoration:none">WhatsApp</a>`:`<span class="m">No phone</span>`}</div></div></div>`).join("")+`</div>${D.length>60?`<div class="m" style="margin-top:6px">Showing the 60 largest of ${D.length}. Export the CSV for the full list.</div>`:""}`:`<div class="card m">Nobody owes anything.</div>`)+recentReceipts()}
 const SRCH='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></svg>';
 const latestEx=()=>EX.slice().reverse().find(e=>Object.keys(S.res).some(k=>k.startsWith(S.fy+"|"+S.ft+"|"+e+"|")))||EX[0];
-const HINT='<div class="m" style="padding:10px 2px">Type a name, admission number, parent name or phone. Press Enter to open the first match. If only one student matches, the profile opens by itself.</div>';
+const HINT='<div class="m" style="padding:10px 2px">Type a name, admission number, parent name or phone. Press Enter to open the first match.</div>';
 function findS(q){q=(q||"").trim().toLowerCase();if(!q)return[];const w=q.split(/\s+/),dg=q.replace(/\D/g,"");
   return S.st.filter(s=>!s.left&&canViewStudent(s)).filter(s=>{const h=(s.name+" "+(s.adm||"")+" "+(s.parent||"")).toLowerCase();return w.every(x=>h.includes(x))||(dg.length>=4&&String(s.phone||"").replace(/\D/g,"").includes(dg))}).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,12)}
 function sRows(L,q){if(!L.length)return `<div class="m" style="margin-top:10px">No student found for “${esc(q)}”${me().role==="admin"?"":" in your class"}.</div>`;
   return `<div class="m" style="margin:10px 0 4px">${L.length}${L.length===12?"+":""} found · tap a name for full details</div><div class="led one">`+L.map(s=>{const ar=arrears(s),fb=TF-fPaid(s,S.fy,S.ft),lr=lastRes(s),m=lr?rmean(lr.r):null;
     return `<div class="lr" onclick="det('${s.id}')"><span style="width:10px;height:10px;border-radius:50%;background:${COL[s.cls]};flex:none"></span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">Adm. ${esc(s.adm||"—")} · ${s.cls}</div><div class="m">${ar?"Remedial owes "+fmt(ar):"Remedial clear"} · Fees balance ${fmt(fb)}</div></div>${m!=null?`<span class="pill ${gk(gr(m))}">${gr(m)}</span>`:""}</div>`}).join("")+`</div>`}
-function sGo(q,box){const L=findS(q),t=(q||"").trim();$(box).innerHTML=t?sRows(L,t):(box==="#gres"?HINT:"");clearTimeout(sGo.h);
-  if(L.length===1&&t.length>=3&&ui.sp!==t.toLowerCase())sGo.h=setTimeout(()=>{ui.sp=t.toLowerCase();det(L[0].id)},550)}
+function sGo(q,box){const L=findS(q),t=(q||"").trim();$(box).innerHTML=t?sRows(L,t):(box==="#gres"?HINT:"")}
 function skey(e){if(e.key!=="Enter")return;const L=findS(e.target.value);if(L[0]){e.preventDefault();clearTimeout(sGo.h);det(L[0].id)}}
 function openSearch(){ui.sp="";M(`<div class="ov" onclick="if(event.target===this)cm()" style="align-items:flex-start"><div class="sheet" style="border-radius:0 0 14px 14px;max-height:92vh;overflow:auto"><div style="display:flex;gap:8px;align-items:center"><input id="gq" type="search" autocomplete="off" placeholder="Search a student" oninput="sGo(this.value,'#gres')" onkeydown="skey(event)" style="margin:0"><button class="btn s sm" onclick="cm()">Close</button></div><div id="gres">${HINT}</div></div></div>`);setTimeout(()=>{const i=$("#gq");if(i)i.focus()},60)}
 function det(id){const s=S.st.find(x=>x.id===id);if(!canViewStudent(s))return;
@@ -301,8 +345,8 @@ function det(id){const s=S.st.find(x=>x.id===id);if(!canViewStudent(s))return;
 ${acadCard(s)}
 <div class="card"><div class="m"><b>School fees · Term ${S.ft}, ${S.fy}</b></div><div class="st" style="margin-top:6px"><div><b>${fmt(fp)}</b><span>Paid of ${fmt(TF)}</span></div><div><b>${fmt(fb)}</b><span>Balance</span></div><div><span class="pill ${fk}">${ft}</span></div></div><button class="btn s sm" style="margin-top:10px" onclick="ui.fy=S.fy;ui.ft=S.ft;fdet('${id}')">Payment history</button></div>
 <div class="card"><div class="m"><b>Remedial, week by week (KSh)</b></div><div class="st" style="margin:6px 0 10px"><div><b>${fmt(tm)}</b><span>Paid this term</span></div><div><b>${fmt(ar)}</b><span>Owes</span></div><div><span class="pill ${k}">${tx}</span><span style="display:block;margin-top:4px">Week ${S.week}</span></div></div><div class="wg">${g}</div></div>
-<div class="acts">${ed?`<button class="btn" onclick="ui.week=S.week;payM('${id}')">Record Week ${S.week} payment</button>`:""}${ed&&fb>0?`<button class="btn s" onclick="ui.fy=S.fy;ui.ft=S.ft;fpayM('${id}')">Record school fees</button>`:""}${ed?`<button class="btn s" onclick="receiptM('${id}')">Payment receipt</button><button class="btn s" onclick="parentMessage('${id}','balance')">WhatsApp: balance</button><button class="btn s" onclick="parentMessage('${id}','attendance')">WhatsApp: attendance</button><button class="btn s" onclick="editM('${id}')">Edit details</button>`:""}</div>
-<button class="btn s" style="margin-top:10px" onclick="cm()">Close</button></div></div>`)}
+<div class="acts">${ed?`<button class="btn" onclick="ui.week=S.week;payM('${id}')">Remedial payment</button>`:""}${ed&&fb>0?`<button class="btn" onclick="ui.fy=S.fy;ui.ft=S.ft;fpayM('${id}')">School fees</button>`:""}<button class="btn s" onclick="reportM('${id}')">Report card</button>${ed?`<button class="btn s" onclick="msgM('${id}')">Message parent</button><button class="btn s" onclick="receiptM('${id}')">Receipt</button><button class="btn s" onclick="editM('${id}')">Edit</button>`:""}</div></div></div>`)}
+function msgM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>WhatsApp ${esc(s.parent||"parent")}</h3><button class="btn" onclick="parentMessage('${id}','balance')">Remedial balance</button><button class="btn s" style="margin-top:8px" onclick="parentMessage('${id}','attendance')">Attendance today</button><button class="btn s" style="margin-top:8px" onclick="det('${id}')">Back</button></div></div>`)}
 function setC(c){ui.cls=c;ui.owe=0;R()}
 function wk(d){ui.week=Math.min(W,Math.max(1,ui.week+d));R()}
 function vTotals(){const wkT=CL.reduce((t,c)=>t+tot(c,"week"),0),tm=CL.reduce((t,c)=>t+tot(c,"term"),0),ow=live().reduce((t,s)=>t+arrears(s),0);
@@ -313,11 +357,11 @@ function vView(){const c=ui.cls,L=inCls(c),w=ui.week,t=U(c),
     return `<div class="lr" onclick="${ui.quick?"qk":"payM"}('${s.id}')"><span class="ix">${i+1}</span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">${ar?"Owes "+fmt(ar):"No arrears"}</div></div><div style="text-align:right"><span class="pill ${k}">${tx}</span>${a?`<div class="m">${fmt(a)}</div>`:""}</div><button class="ib" onclick="event.stopPropagation();det('${s.id}')" aria-label="Open profile">i</button></div>`}).join("")+`</div>`:`<div class="card m">${ui.owe?"Nobody owes anything.":"No students yet. Add them from the Classes tab."}</div>`;
   return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px"><button class="chip" onclick="wk(-1)">‹</button><b style="font-family:var(--sf)">${wl(w)}${w===S.week?" (current)":""}</b><button class="chip" onclick="wk(1)">›</button></div>
 <div class="card" style="border-top:3px solid ${COL[c]}"><div class="m" style="margin-bottom:6px">${c} · Class teacher <b>${esc(t.name)}</b></div><div class="st"><div><b>${np}/${L.length}</b><span>Paid</span></div><div><b>${fmt(co)}</b><span>Collected</span></div><div><b>${fmt(ex)}</b><span>Expected</span></div></div><div class="bar" style="--c:${COL[c]}"><i style="width:${pc}%"></i></div><div class="m" style="margin-top:8px">Collected this term: <b>${fmt(tot(c,"term"))}</b> · Handed to bursar: <b>${fmt(hnd(c))}</b> · Not yet handed in: <b>${fmt(tot(c,"term")-hnd(c))}</b></div></div>
-<div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn s sm" style="${ui.quick?"background:var(--acc);color:#1F2A37":""}" onclick="ui.quick=!ui.quick;R()">Quick mark: ${ui.quick?"on":"off"}</button><button class="btn s sm" style="${ui.owe?"background:var(--acc);color:#1F2A37":""}" onclick="ui.owe=!ui.owe;R()">Owing only</button><button class="btn s sm" onclick="exp()">Export CSV</button><button class="btn s sm" onclick="window.print()">Print</button></div>`+rows+recentReceipts()}
+<div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn s sm" style="${ui.quick?"background:var(--acc);color:#1F2A37":""}" onclick="ui.quick=!ui.quick;R()">Quick mark: ${ui.quick?"on":"off"}</button><button class="btn s sm" style="${ui.owe?"background:var(--acc);color:#1F2A37":""}" onclick="ui.owe=!ui.owe;R()">Owing only</button><button class="btn s sm" onclick="exp()">Export CSV</button></div>`+rows+recentReceipts()}
 function payM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;
-  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>${esc(s.name)}</h3><p class="m">Week ${ui.week}</p><label>Amount received (KSh)</label><input id="pa" type="number" min="0" inputmode="numeric" value="${amt(s,ui.week)||WK}"><button class="btn" onclick="savePay('${id}')">Save payment</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
+  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>${esc(s.name)}</h3><p class="m">Week ${ui.week}</p><label>Amount received (KSh)</label><input id="payAmt" type="number" min="0" inputmode="numeric" value="${amt(s,ui.week)||WK}"><button class="btn" onclick="savePay('${id}')">Save payment</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
 function savePay(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;
-  const a=Math.max(0,Math.round(+$("#pa").value||0));if(a)s.pays[ui.week]=a;else delete s.pays[ui.week];
+  const a=Math.max(0,Math.round(+$("#payAmt").value||0));if(a)s.pays[ui.week]=a;else delete s.pays[ui.week];
   LOG(s.name+" week "+ui.week+": "+fmt(a));save();cm();R();T(a?"Saved "+fmt(a):"Payment cleared")}
 function parseList(txt,cls){
   const rows=txt.replace(/^\uFEFF/,"").split(/\r?\n/).map(l=>l.split(",").map(v=>v.trim().replace(/^"|"$/g,"")));
@@ -336,8 +380,8 @@ const upMsg=o=>o.a+o.u?`Added ${o.a}, updated ${o.u}`:"No students found. Check 
 /* ---------- attendance ---------- */
 function attendanceStudents(){const u=me();return S.st.filter(s=>!s.left&&(u.role==="admin"?(ui.cls? s.cls===ui.cls:(!ui.grade||s.cls.startsWith(ui.grade+" "))):s.cls===u.cls));}
 function vAttendance(){const L=attendanceStudents(),d=ui.attDate||today(),present=attCount(L,d,"Present"),absent=attCount(L,d,"Absent"),late=attCount(L,d,"Late"),excused=attCount(L,d,"Excused");
-  return `<h2 class="sec">Daily attendance</h2><div class="card"><label>Attendance date</label><input id="attDate" type="date" value="${d}" onchange="ui.attDate=this.value;R()">${me().role==="admin"?`<label>Class / stream</label><select id="attClass" onchange="ui.cls=this.value||null;R()"><option value="">All classes</option>${CL.map(c=>`<option ${ui.cls===c?"selected":""}>${c}</option>`).join("")}</select>`:`<div class="m">Class: ${esc(me().cls)}</div>`}<div class="st" style="margin-top:10px"><div><b>✓ ${present}</b><span>Present</span></div><div><b>✗ ${absent}</b><span>Absent</span></div><div><b>${L.length-present-absent-late-excused}</b><span>Not marked</span></div></div><div class="m" style="margin-top:8px">${L.length} students</div><button class="btn" style="margin-top:10px" onclick="markAll()">✓ Mark everyone present</button><div class="m" style="margin-top:6px">Then tap ✗ for anyone absent. Tap a mark again to clear it.</div><button class="btn s" style="margin-top:8px" onclick="window.print()">Print attendance</button></div>
-  ${L.length?`<div class="led">`+L.sort((a,b)=>a.cls.localeCompare(b.cls)||a.name.localeCompare(b.name)).map(s=>{const st=attStatus(d,s.id);return `<div class="lr" style="cursor:default"><div style="flex:1;min-width:0"><b>${esc(s.name)}</b> ${["Late","Excused"].includes(st)?`<span class="pill pa">${st}</span>`:""}<div class="m">${esc(s.adm||"")} · ${s.cls}</div></div><button class="mk ${st==="Present"?"yes":""}" onclick="setAttendance('${s.id}','Present')" aria-label="Present ${esc(s.name)}">✓</button><button class="mk ${st==="Absent"?"no":""}" onclick="setAttendance('${s.id}','Absent')" aria-label="Absent ${esc(s.name)}">✗</button></div>`}).join("")+`</div>`:`<div class="card m">No active students in this selection.</div>`}<p class="m" style="margin-top:10px">Records are saved on this device. Use the backup feature regularly; shared multi-device syncing requires a secure online database.</p>`}
+  return `<h2 class="sec">Daily attendance</h2><div class="card"><label>Attendance date</label><input id="attDate" type="date" value="${d}" onchange="ui.attDate=this.value;R()">${me().role==="admin"?`<label>Class / stream</label><select id="attClass" onchange="ui.cls=this.value||null;R()"><option value="">All classes</option>${CL.map(c=>`<option ${ui.cls===c?"selected":""}>${c}</option>`).join("")}</select>`:`<div class="m">Class: ${esc(me().cls)}</div>`}<div class="st" style="margin-top:10px"><div><b>✓ ${present}</b><span>Present</span></div><div><b>✗ ${absent}</b><span>Absent</span></div><div><b>${L.length-present-absent-late-excused}</b><span>Not marked</span></div></div><div class="m" style="margin-top:8px">${L.length} students</div><button class="btn" style="margin-top:10px" onclick="markAll()">✓ Mark everyone present</button><div class="m" style="margin-top:6px">Then tap ✗ for anyone absent. Tap a mark again to clear it.</div></div>
+  ${L.length?`<div class="led">`+L.sort((a,b)=>a.cls.localeCompare(b.cls)||a.name.localeCompare(b.name)).map(s=>{const st=attStatus(d,s.id);return `<div class="lr" style="cursor:default"><div style="flex:1;min-width:0"><b>${esc(s.name)}</b> ${["Late","Excused"].includes(st)?`<span class="pill pa">${st}</span>`:""}<div class="m">${esc(s.adm||"")} · ${s.cls}</div></div><button class="mk ${st==="Present"?"yes":""}" onclick="setAttendance('${s.id}','Present')" aria-label="Present ${esc(s.name)}">✓</button><button class="mk ${st==="Absent"?"no":""}" onclick="setAttendance('${s.id}','Absent')" aria-label="Absent ${esc(s.name)}">✗</button></div>`}).join("")+`</div>`:`<div class="card m">No active students in this selection.</div>`}`}
 function markAll(){const d=ui.attDate||today();S.attendance=S.attendance||{};let n=0;attendanceStudents().forEach(s=>{if(canMarkAttendance(s)&&attStatus(d,s.id)==="Unmarked"){S.attendance[attKey(d,s.id)]={status:"Present",updatedAt:Date.now(),updatedBy:me().name};n++}});if(!n)return T("Nobody left to mark");LOG("Attendance "+d+": "+n+" marked Present");save();const y=window.scrollY;R();window.scrollTo(0,y);T(n+" marked Present")}
 function setAttendance(id,status){const s=S.st.find(x=>x.id===id);if(!canMarkAttendance(s))return T("You do not have permission to mark this register");const d=ui.attDate||today(),k=attKey(d,id);S.attendance=S.attendance||{};if(attStatus(d,id)===status)status="Unmarked";if(status==="Unmarked")delete S.attendance[k];else S.attendance[k]={status,updatedAt:Date.now(),updatedBy:me().name};LOG("Attendance "+s.name+" "+d+": "+status);save();const y=window.scrollY;R();window.scrollTo(0,y)}
 /* ---------- parent communication and receipts ---------- */
@@ -363,10 +407,10 @@ function vFees(){const u=me(),ad=u.role==="admin",y=ui.fy=ui.fy||S.fy,t=ui.ft=ui
   for(let i=S.fy-2;i<=S.fy+1;i++)yrs.push(i);if(!yrs.includes(y))yrs.push(y);
   const scope=ad?(ui.fc||"All classes"):u.cls;let cmp="";
   if(ad&&!ui.fc){cmp=`<h3>Class comparison</h3>`+CL.map(c=>({c,r:fSum(inCls(c),y,t)})).sort((a,b)=>b.r.pct-a.r.pct||b.r.col-a.r.col).map((x,i)=>`<div class="card" style="--c:${COL[x.c]};cursor:pointer" onclick="ui.fc='${x.c}';R()"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${x.c}</b><b>${x.r.pct}%</b></div><div class="m">${fmt(x.r.col)} of ${fmt(x.r.exp)} · Balance ${fmt(x.r.bal)}</div><div class="m">${x.r.full} full · ${x.r.part} partial · ${x.r.none} unpaid · ${x.r.n} students</div><div class="bar"><i style="width:${x.r.pct}%"></i></div></div>`).join("")}
-  return `<h2 class="sec">School fees</h2><div class="prt"><b>Osembo School: fees report</b><div>${y} · Term ${t} · ${scope} · printed ${today()}</div></div>
+  return `<div class="prt"><b>Osembo School: fees report</b><div>${y} · Term ${t} · ${scope} · printed ${today()}</div></div>
 <div class="card noprt"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label>Year</label><select onchange="ui.fy=+this.value;R()">${yrs.map(v=>`<option ${v===y?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Term</label><select onchange="ui.ft=+this.value;R()">${[1,2,3].map(n=>`<option value="${n}" ${n===t?"selected":""}>Term ${n}</option>`).join("")}</select></div></div>${ad?`<label>Class</label><select onchange="ui.fc=this.value;R()"><option value="">All classes</option>${CL.map(c=>`<option ${ui.fc===c?"selected":""}>${c}</option>`).join("")}</select>`:`<div class="m">Your class: <b>${u.cls}</b></div>`}<div class="m">Fee: ${fmt(TF)} per student per term</div></div>
 <div class="card" style="border-top:3px solid var(--acc)"><div class="m">${scope} · Term ${t}, ${y}</div><div style="font:700 28px var(--sf)">${fmt(sm.col)} <span class="m">of ${fmt(sm.exp)}</span></div><div class="bar"><i style="width:${sm.pct}%"></i></div><div class="st" style="margin-top:12px"><div><b>${sm.n}</b><span>Students</span></div><div><b>${fmt(sm.exp)}</b><span>Expected</span></div><div><b>${fmt(sm.col)}</b><span>Collected</span></div></div><div class="st" style="margin-top:10px"><div><b>${fmt(sm.bal)}</b><span>Outstanding</span></div><div><b>${sm.full}</b><span>Fully paid</span></div><div><b>${sm.part}</b><span>Partial</span></div></div><div class="m" style="margin-top:8px;text-align:center">${sm.none} not paid</div></div>
-${cmp}<h3>Student fee records</h3><div class="noprt"><input id="fq" type="search" placeholder="Search name or admission number" value="${esc(ui.fq||"")}" oninput="ui.fq=this.value.trim();$('#flist').innerHTML=fListHtml()"><select onchange="ui.fs=this.value;R()" style="margin-top:0">${["all","Fully Paid","Partially Paid","Not Paid"].map(v=>`<option value="${v}" ${(ui.fs||"all")===v?"selected":""}>${v==="all"?"All statuses":v}</option>`).join("")}</select><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" onclick="fexp()">Export CSV</button><button class="btn s sm" onclick="window.print()">Print report</button>${ad?`<button class="btn s sm" onclick="fexpT()">Export transactions</button>`:""}</div></div><div id="flist">${fListHtml()}</div>`}
+${cmp}<h3>Student fee records</h3><div class="noprt"><input id="fq" type="search" placeholder="Search name or admission number" value="${esc(ui.fq||"")}" oninput="ui.fq=this.value.trim();$('#flist').innerHTML=fListHtml()"><select onchange="ui.fs=this.value;R()" style="margin-top:0">${["all","Fully Paid","Partially Paid","Not Paid"].map(v=>`<option value="${v}" ${(ui.fs||"all")===v?"selected":""}>${v==="all"?"All statuses":v}</option>`).join("")}</select><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn s sm" onclick="fexp()">Export CSV</button>${ad?`<button class="btn s sm" onclick="fexpT()">Transactions CSV</button>`:""}</div></div><div id="flist">${fListHtml()}</div>`}
 function fdet(id){const s=S.st.find(x=>x.id===id);if(!canViewStudent(s))return;const y=ui.fy,t=ui.ft,ad=me().role==="admin",a=fPaid(s,y,t),[tx,k]=fStat(a),H=fpAll(s,y,t).slice().sort((p,q)=>q.bt-p.bt);
   M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><div style="font:700 21px var(--sf)">${esc(s.name)}</div><div class="m">Adm. ${esc(s.adm||"—")} · ${s.cls} · Term ${t}, ${y}</div>
 <div class="st card" style="margin-top:12px"><div><b>${fmt(TF)}</b><span>Required</span></div><div><b>${fmt(a)}</b><span>Paid</span></div><div><b>${fmt(TF-a)}</b><span>Balance</span></div></div><div style="margin-bottom:10px"><span class="pill ${k}">${tx}</span></div>
@@ -393,8 +437,6 @@ function fexp(){const y=ui.fy,t=ui.ft,rows=[["Year","Term","Class","Adm","Name",
 function fexpT(){if(me().role!=="admin")return;const rows=[["Date","Year","Term","Class","Adm","Name","Amount","Method","Reference","Recorded by","Status"]];
   S.fp.slice().sort((a,b)=>a.bt-b.bt).forEach(x=>{const s=S.st.find(v=>v.id===x.sid)||{};rows.push([x.d,x.y,"Term "+x.t,s.cls||"",s.adm||"",s.name||"",x.a,x.m,x.ref,x.by,x.rev?"Reversed: "+x.rr:x.ver?"Verified":"Unverified"])});
   LOG("Exported fee transactions");save();dl("osembo-fee-transactions.csv",CSVX(rows),"text/csv")}
-function saveFPer(){if(me().role!=="admin")return;const y=Math.round(+$("#fyy").value),t=+$("#fyt").value;if(!(y>=2000&&y<=2100))return T("Enter a valid year");S.fy=ui.fy=y;S.ft=ui.ft=t;LOG("Fees period set: Term "+t+" "+y);save();R();T("Fees period saved")}
-
 /* ---------- academics ---------- */
 const EX=["Opening","Mid-term","End-term"];
 const SUBJ=[["eng","English",/^eng/],["kis","Kiswahili",/^(kis|swa)/],["mat","Mathematics",/^mat/],["sci","Integrated Science",/^(sci|int)/],["soc","Social Studies",/^soc/],["pre","Pre-Technical Studies",/^(pre|tech)/],["agr","Agriculture & Nutrition",/^agri/],["art","Creative Arts & Sports",/^(art|creat)/],["rel","Religious Education",/^(rel|cre|ire|hre)/]];
@@ -413,17 +455,11 @@ function vAcad(){const u=me(),ad=u.role==="admin";ui.ac=ad?(ui.ac||CL[0]):u.cls;
   cmean=done.length?done.reduce((a,o)=>a+o.m,0)/done.length:0,
   sa=SUBJ.map(x=>{const v=done.map(o=>o.r[x[0]]).filter(v=>v!=null);return[x[1],v.length?v.reduce((a,b)=>a+b,0)/v.length:null]}).filter(x=>x[1]!=null),
   row=o=>{const p=o.n?done.findIndex(x=>x.m===o.m)+1:"–";return `<div class="lr" onclick="det('${o.s.id}')"><span class="ix">${p}</span><div style="flex:1;min-width:0"><b>${esc(o.s.name)}</b><div class="m">Adm. ${esc(o.s.adm||"—")}${o.n?" · Total "+rtot(o.r)+" · "+o.n+"/"+SUBJ.length+" subjects":" · No results yet"}</div></div>${o.n?`<div style="text-align:right"><b>${r1(o.m)}%</b><div><span class="pill ${gk(gr(o.m))}">${gr(o.m)}</span></div></div>`:""}</div>`};
-  return `<h2 class="sec">Academic performance</h2>${examBar()}
+  return `${examBar()}
 <div class="card" style="border-top:3px solid var(--acc)"><div class="st"><div><b>${done.length?r1(cmean)+"%":"–"}</b><span>Class mean</span></div><div><b>${done.length}/${rows.length}</b><span>Results in</span></div><div><b>${done.length?esc(done[0].s.name.split(" ")[0]):"–"}</b><span>Top student</span></div></div></div>
-${can?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">${canMarks(c)?`<button class="btn sm" onclick="go('marks')">Enter marks</button>`:""}<button class="btn sm" onclick="insM()">🏆 Rank &amp; insights</button><button class="btn s sm" onclick="printAllRC(ui.ac)">Print all report cards</button></div>`:""}
+${can?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px"><button class="btn sm" onclick="insM()">🏆 Rank &amp; insights</button><button class="btn s sm" onclick="printAllRC(ui.ac)">Print all report cards</button></div>`:""}
 ${sa.length?`<div class="card"><h3>Subject averages</h3><div class="sg">${sa.map(x=>`<div><div style="display:flex;justify-content:space-between"><span>${esc(x[0])}</span><b>${r1(x[1])}</b></div><div class="bar" style="margin:4px 0 12px;--c:${COL[c]}"><i style="width:${x[1]}%"></i></div></div>`).join("")}</div></div>`:""}
 ${rows.length?`<div class="led">${done.concat(rest).map(row).join("")}</div>`:`<div class="card m">No students in this class yet.</div>`}`}
-function marksM(id){const s=S.st.find(x=>x.id===id);if(!s||!canMarks(s.cls))return;const r=rget(s,ui.ay,ui.at,ui.ae)||{};
-  M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet" style="max-height:90vh;overflow:auto"><h3>${esc(s.name)}</h3><p class="m">${ui.ae} · Term ${ui.at}, ${ui.ay} · marks out of 100. Leave blank if not sat.</p><div class="mg">${SUBJ.map(x=>`<div><label>${esc(x[1])}</label><input id="mk_${x[0]}" type="number" min="0" max="100" inputmode="decimal" value="${r[x[0]]??""}"></div>`).join("")}</div><button class="btn" onclick="saveMarks('${id}')">Save results</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
-function saveMarks(id){const s=S.st.find(x=>x.id===id);if(!s||!canMarks(s.cls))return;const r={};let bad=0;
-  SUBJ.forEach(x=>{const v=$("#mk_"+x[0]).value.trim();if(v==="")return;const n=+v;if(isNaN(n)||n<0||n>100)bad=1;else r[x[0]]=r1(n)});
-  if(bad)return T("Marks must be between 0 and 100");const k=rkey(s,ui.ay,ui.at,ui.ae);if(Object.keys(r).length)S.res[k]=r;else delete S.res[k];
-  LOG("Results: "+s.name+", "+ui.ae+" T"+ui.at+" "+ui.ay);save();cm();R();T("Results saved")}
 function parseRes(txt,cls){const rows=txt.replace(/^\uFEFF/,"").split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(/,|\t/).map(v=>v.trim().replace(/^"|"$/g,"")));
   if(rows.length<2)return{err:"Add a header row and at least one student"};
   const h=rows.shift().map(v=>v.toLowerCase().replace(/[^a-z0-9]/g,"")),ix={};SUBJ.forEach(x=>{const i=h.findIndex(v=>x[2].test(v));if(i>=0)ix[x[0]]=i});
@@ -445,11 +481,11 @@ function resSheet(){const c=ui.ac,rows=[["Adm","Name",...SUBJ.map(x=>x[1])]];
   dl("osembo-results-"+c.replace(" ","")+"-"+ui.ae+"-T"+ui.at+"-"+ui.ay+".csv",CSVX(rows),"text/csv")}
 function acadCard(s){const H=[];for(const k in S.res){const p=k.split("|");if(p[3]===s.id&&rcnt(S.res[k]))H.push({y:+p[0],t:+p[1],e:p[2],r:S.res[k]})}
   H.sort((a,b)=>b.y-a.y||b.t-a.t||EX.indexOf(b.e)-EX.indexOf(a.e));
-  if(!H.length)return `<div class="card"><div class="m"><b>Academic performance</b></div><div class="m" style="margin-top:6px">No results recorded yet.</div>${canMarks(s.cls)?`<button class="btn s sm" style="margin-top:10px" onclick="ui.ay=S.fy;ui.at=S.ft;ui.ae=latestEx();marksM('${s.id}')">Enter marks</button>`:""}</div>`;
+  if(!H.length)return `<div class="card"><div class="m"><b>Academic performance</b></div><div class="m" style="margin-top:6px">No results recorded yet.</div></div>`;
   const L=H[0],m=rmean(L.r),ps=rpos(s,L.y,L.t,L.e),pv=H[1]?m-rmean(H[1].r):null;
   return `<div class="card"><div class="m"><b>Academic performance</b> · ${L.e}, Term ${L.t} ${L.y}</div><div class="st" style="margin-top:6px"><div><b>${r1(m)}%</b><span>Mean${pv==null?"":" ("+(pv>=0?"▲ ":"▼ ")+r1(Math.abs(pv))+")"}</span></div><div><b>${ps[0]}/${ps[1]}</b><span>Class position</span></div><div><span class="pill ${gk(gr(m))}">${gr(m)}</span><span style="display:block;margin-top:4px">${rtot(L.r)} total</span></div></div>
 <div style="margin-top:10px">${SUBJ.filter(x=>L.r[x[0]]!=null).map(x=>{const v=L.r[x[0]];return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px"><span>${esc(x[1])}</span><span><b>${v}</b> <span class="pill ${gk(gr(v))}">${gr(v)}</span></span></div><div class="bar" style="margin:3px 0 8px;--c:${COL[s.cls]}"><i style="width:${v}%"></i></div>`}).join("")}</div>
-${H.length>1?`<div class="m" style="margin:8px 0 4px"><b>Previous results</b></div>`+H.slice(1,7).map(h=>{const p=rpos(s,h.y,h.t,h.e),mm=rmean(h.r);return `<div class="m" style="display:flex;justify-content:space-between"><span>${h.e}, T${h.t} ${h.y}</span><span>${r1(mm)}% · ${gr(mm)} · Pos ${p[0]}/${p[1]}</span></div>`}).join(""):""}<button class="btn s sm" style="margin-top:10px" onclick="reportM('${s.id}')">Report card</button>${canMarks(s.cls)?`<button class="btn s sm" style="margin:10px 0 0 6px" onclick="ui.ay=${L.y};ui.at=${L.t};ui.ae='${L.e}';marksM('${s.id}')">Edit marks</button>`:""}</div>`}
+${H.length>1?`<div class="m" style="margin:8px 0 4px"><b>Previous results</b></div>`+H.slice(1,7).map(h=>{const p=rpos(s,h.y,h.t,h.e),mm=rmean(h.r);return `<div class="m" style="display:flex;justify-content:space-between"><span>${h.e}, T${h.t} ${h.y}</span><span>${r1(mm)}% · ${gr(mm)} · Pos ${p[0]}/${p[1]}</span></div>`}).join(""):""}</div>`}
 
 /* ---------- report cards and ranking export ---------- */
 const rcHas=(s,y,t,e)=>rcnt(rget(s,y,t,e))>0;
@@ -541,12 +577,12 @@ function lastRes(s){let b=null;for(const k in S.res){const p=k.split("|");if(p[3
 function openCP(c){ui.cp=c;ui.cq="";ui.ac=c;window.scrollTo(0,0);R()}
 function vClasses(){const u=me(),ad=u.role==="admin";if(!ad)ui.cp=u.cls;if(ui.cp&&!CL.includes(ui.cp))ui.cp=null;
   if(ui.cp)return vCP(ui.cp);const d=today();
-  return `<h2 class="sec">Classes</h2><div class="m" style="margin-bottom:12px">Tap a class to see its students. Marks, register and remedial have their own tabs.</div><div class="cgrid">`+CL.map(c=>{const L=inCls(c),t=U(c),ms=L.map(lastRes).filter(Boolean).map(o=>rmean(o.r)),mn=ms.length?r1(ms.reduce((a,b)=>a+b,0)/ms.length)+"%":"–";
-    return `<button class="pick" style="--c:${COL[c]}" onclick="openCP('${c}')"><div class="av">${ICON}</div><div style="min-width:0"><h4>${c}</h4><div class="m">Class teacher: <b>${esc(t.name)}</b></div><div class="m">${L.length} students · Latest mean ${mn}</div><div class="m">${fmt(tot(c,"week"))} remedial this week · ✓ ${attCount(L,d,"Present")} present today</div></div><span class="go">›</span></button>`}).join("")+`</div><div class="card" style="margin-top:16px"><h3>Danger zone</h3><p class="m">Remove every student in the whole school, with their payments, results and attendance.</p><button class="btn dn sm" onclick="delM('ALL')">Delete all students</button></div>`}
+  return `<h2 class="sec">Classes</h2><div class="cgrid">`+CL.map(c=>{const L=inCls(c),t=U(c),ms=L.map(lastRes).filter(Boolean).map(o=>rmean(o.r)),mn=ms.length?r1(ms.reduce((a,b)=>a+b,0)/ms.length)+"%":"–";
+    return `<button class="pick" style="--c:${COL[c]}" onclick="openCP('${c}')"><div class="av">${ICON}</div><div style="min-width:0"><h4>${c}</h4><div class="m">Class teacher: <b>${esc(t.name)}</b></div><div class="m">${L.length} students · Latest mean ${mn}</div><div class="m">${fmt(tot(c,"week"))} remedial this week · ✓ ${attCount(L,d,"Present")} present today</div></div><span class="go">›</span></button>`}).join("")+`</div>`}
 function vCP(c){const ad=me().role==="admin",L=inCls(c),t=U(c);
   return (ad?`<button class="back" onclick="ui.cp=null;R()">‹ All classes</button>`:"")+`<div class="card" style="display:flex;align-items:center;gap:12px;border-top:3px solid ${COL[c]}"><div class="av" style="--c:${COL[c]}">${ICON}</div><div style="flex:1"><div style="font:700 22px var(--sf)">${c}</div><div class="m">Class teacher: <b>${esc(t.name)}</b> · ${L.length} students</div></div></div>`+cpStu(c,L)}
 function cpStu(c,L){const can=canEdit(c);
-  return (can?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" onclick="addSt('${c}')">+ Add student</button><button class="btn s sm" onclick="pasteC('${c}')">Paste list</button><span class="fbtn btn s sm">Upload list<input type="file" onchange="uplC(this,'${c}')"></span>${L.length?`<button class="btn dn sm" style="margin-left:auto" onclick="delM('${c}')">Delete all students</button>`:""}</div>`:"")+`<input type="search" placeholder="Search this class by name or admission number" value="${esc(ui.cq||"")}" oninput="ui.cq=this.value;$('#cpl').innerHTML=cpList(ui.cp)" style="margin-top:0"><div id="cpl">${cpList(c)}</div>`}
+  return (can?`<button class="btn sm" style="margin-bottom:10px" onclick="addSt('${c}')">+ Add student</button><details class="card" style="padding:10px 14px"><summary class="m"><b>Import or remove students</b></summary><div class="row2" style="margin-top:10px"><button class="btn s sm" onclick="pasteC('${c}')">Paste list</button><span class="fbtn btn s sm">Upload list<input type="file" onchange="uplC(this,'${c}')"></span>${L.length?`<button class="btn dn sm" onclick="delM('${c}')">Delete all</button>`:""}</div></details>`:"")+`<input type="search" placeholder="Search this class by name or admission number" value="${esc(ui.cq||"")}" oninput="ui.cq=this.value;$('#cpl').innerHTML=cpList(ui.cp)"><div id="cpl">${cpList(c)}</div>`}
 function cpList(c){const q=(ui.cq||"").trim().toLowerCase(),A=inCls(c),L=A.filter(s=>!q||s.name.toLowerCase().includes(q)||String(s.adm||"").toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
   if(!L.length)return `<div class="card m">${A.length?"No student matches.":"No students yet. Use + Add student, Paste list or Upload list."}</div>`;
   return `<div class="m" style="margin-bottom:6px">${L.length} students · remedial status is for Week ${S.week}</div><div class="led">`+L.map((s,i)=>{const lr=lastRes(s),m=lr?rmean(lr.r):0,[tx,k]=stat(amt(s,S.week));
@@ -589,21 +625,23 @@ function vHome(){const u=me(),ad=u.role==="admin",h=new Date().getHours(),g=h<12
 <div class="card a-a">${annHtml()}</div></div>`}
 /* ---------- marks upload tab ---------- */
 function examBar(){const ad=me().role==="admin",c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae;
-  return `<div class="card"><div class="fg"><div><label>Year</label><select onchange="ui.ay=+this.value;R()">${yrsL(y).map(v=>`<option ${v===y?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Term</label><select onchange="ui.at=+this.value;R()">${[1,2,3].map(n=>`<option value="${n}" ${n===t?"selected":""}>Term ${n}</option>`).join("")}</select></div><div><label>Exam</label><select onchange="ui.ae=this.value;R()">${EX.map(v=>`<option ${v===e?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Class</label>${ad?`<select onchange="ui.ac=this.value;R()">${CL.map(v=>`<option ${v===c?"selected":""}>${v}</option>`).join("")}</select>`:`<div style="padding:11px 0"><b>${esc(c)}</b></div>`}</div></div></div>`}
+  return `<details class="card" style="padding:10px 14px" ${ui.eo?"open":""} ontoggle="ui.eo=this.open"><summary><b>${esc(c)}</b> · ${esc(e)} · Term ${t}, ${y} <span class="m">(change)</span></summary><div class="fg" style="margin-top:10px"><div><label>Year</label><select onchange="ui.ay=+this.value;R()">${yrsL(y).map(v=>`<option ${v===y?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Term</label><select onchange="ui.at=+this.value;R()">${[1,2,3].map(n=>`<option value="${n}" ${n===t?"selected":""}>Term ${n}</option>`).join("")}</select></div><div><label>Exam</label><select onchange="ui.ae=this.value;R()">${EX.map(v=>`<option ${v===e?"selected":""}>${v}</option>`).join("")}</select></div><div><label>Class</label>${ad?`<select onchange="ui.ac=this.value;R()">${CL.map(v=>`<option ${v===c?"selected":""}>${v}</option>`).join("")}</select>`:`<div style="padding:11px 0"><b>${esc(c)}</b></div>`}</div></div></details>`}
+function vMarksTab(){const u=me(),c=u.role==="admin"?(ui.ac||CL[0]):u.cls;ui.mv=ui.mv||(canMarks(c)?"enter":"res");if(ui.mv==="enter"&&!canMarks(c))ui.mv="res";
+  return `<div class="seg"><button class="${ui.mv==="enter"?"on":""}" onclick="ui.mv='enter';R()">Enter marks</button><button class="${ui.mv==="res"?"on":""}" onclick="ui.mv='res';R()">Results</button></div>`+(ui.mv==="enter"?vMarks():vAcad())}
 function vMarks(){const u=me(),ad=u.role==="admin";ui.ac=ad?(ui.ac||CL[0]):u.cls;ui.ay=ui.ay||S.fy;ui.at=ui.at||S.ft;if(!ui.ae)ui.ae=latestEx();ui.ms=SUBJ.some(x=>x[0]===ui.ms)?ui.ms:SUBJ[0][0];
   const c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae,sj=ui.ms;
-  if(!canMarks(c))return `<h2 class="sec">Marks</h2><div class="warn"><b>Marks entry is switched off for your account.</b><div>Ask the administrator to turn it on under Admin.</div></div>`;
+  if(!canMarks(c))return `<div class="warn"><b>Marks entry is switched off for your account.</b><div>Ask the administrator to turn it on under Admin.</div></div>`;
   const L=inCls(c).sort((a,b)=>a.name.localeCompare(b.name)),cur=SUBJ.find(x=>x[0]===sj),cnt=x=>L.filter(s=>((rget(s,y,t,e)||{})[x[0]])!=null).length;
-  return `<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="sec">Marks</h2><button class="hm" onclick="insM()" aria-label="Rank students and insights" title="Rank students and insights" style="font-size:22px">🏆</button></div>${examBar()}
-<div class="chips sc">${SUBJ.map(x=>`<button class="chip ${x[0]===sj?"on":""}" onclick="mSub('${x[0]}')">${esc(x[1])} <span class="mc" data-s="${x[0]}">${cnt(x)}/${L.length}</span></button>`).join("")}</div>
+  return `${examBar()}
+<select onchange="mSub(this.value)" style="margin:0 0 10px">${SUBJ.map(x=>`<option value="${x[0]}" data-s="${x[0]}" ${x[0]===sj?"selected":""}>${esc(x[1])} (${cnt(x)}/${L.length})</option>`).join("")}</select>
 <div class="card" style="padding:10px 14px;border-top:3px solid var(--acc)"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(cur[1])}</b><span class="m" id="mst"></span></div><div class="bar" style="margin-top:8px"><i id="mbar" style="width:0"></i></div></div>
 ${L.length?`<div class="led one">${L.map((s,i)=>{const v=(rget(s,y,t,e)||{})[sj];return `<div class="lr" style="cursor:default;padding:8px 12px"><span class="ix">${i+1}</span><div style="flex:1;min-width:0"><b>${esc(s.name)}</b><div class="m">Adm. ${esc(s.adm||"—")}</div></div><span id="gd_${s.id}" class="pill ${v!=null?gk(gr(v)):"nc"}" style="min-width:38px;text-align:center">${v!=null?gr(v):"–"}</span><input class="mi" id="bg_${s.id}" data-i="${i}" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="–" value="${v??""}" onfocus="this.select()" onkeydown="mkey(event,${i})" onchange="mchg(this)"></div>`}).join("")}</div>
-<div class="m" style="margin:10px 2px">Type a mark (0 to 100) and press <b>Enter</b> to go to the next student. After the last student, Enter opens the next subject. Marks save as you go. Leave a box empty if the student did not sit.</div>
+<div class="m" style="margin:10px 2px">Type a mark (0 to 100) and press <b>Enter</b> for the next student. Marks save as you go. Leave empty if the student did not sit.</div>
 <button class="btn" onclick="mNext()">Next subject ›</button>`:`<div class="card m">No students in this class yet. Add them in the Classes tab.</div>`}
 <details class="card" style="margin-top:12px"><summary><b>Upload from a file instead</b></summary><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><span class="fbtn btn sm">Upload results (CSV)<input type="file" accept=".csv,.txt,.tsv,text/csv" onchange="upRes(this)"></span><button class="btn s sm" onclick="pasteRes()">Paste from spreadsheet</button><button class="btn s sm" onclick="resSheet()">Download template</button></div><div class="m" style="margin-top:8px">The template has your class list. Fill in marks, then upload it. Blank cells are left alone.</div></details>`}
 function mStats(){const c=ui.ac,y=ui.ay,t=ui.at,e=ui.ae,sj=ui.ms,L=inCls(c),V=L.map(s=>(rget(s,y,t,e)||{})[sj]).filter(v=>v!=null),el=document.getElementById("mst"),bar=document.getElementById("mbar");
   if(el)el.textContent=V.length+" of "+L.length+" entered"+(V.length?" · mean "+r1(V.reduce((a,b)=>a+b,0)/V.length):"");if(bar)bar.style.width=(L.length?Math.round(V.length/L.length*100):0)+"%";
-  document.querySelectorAll(".mc").forEach(n=>{const x=n.dataset.s;n.textContent=L.filter(s=>((rget(s,y,t,e)||{})[x])!=null).length+"/"+L.length})}
+  document.querySelectorAll("option[data-s]").forEach(n=>{const x=n.dataset.s;n.textContent=SUBJ.find(z=>z[0]===x)[1]+" ("+L.filter(s=>((rget(s,y,t,e)||{})[x])!=null).length+"/"+L.length+")"})}
 function mchg(el){const id=el.id.slice(3),s=S.st.find(x=>x.id===id);if(!s||!canMarks(s.cls))return false;const sj=ui.ms,k=rkey(s,ui.ay,ui.at,ui.ae),v=el.value.trim().replace(",","."),r=Object.assign({},S.res[k]||{}),gd=document.getElementById("gd_"+id);
   if(v===""){if(r[sj]==null){el.classList.remove("bad");return true}delete r[sj]}
   else{const n=+v;if(isNaN(n)||n<0||n>100){el.classList.add("bad");T("Marks must be between 0 and 100");return false}r[sj]=r1(n);el.value=r[sj]}
@@ -621,19 +659,29 @@ function togMarks(id){if(me().role!=="admin")return;const u=U(id);if(!u||u.role!
 
 /* ---------- admin ---------- */
 function vAdm(){
-  return bakWarn()+`<div class="card"><b>${S.preview?"🟡 Preview mode":"✅ Activated"}</b><div class="m">${S.preview?`Fee not paid. Pay KSh ${FEE} to Till ${TILL} to activate.`:`Paid to Buy Goods Till ${TILL}`}</div></div><h3>Remedial cash handover by class teacher</h3>`+
-  S.users.filter(u=>u.role==="teacher").map(u=>{const c=tot(u.cls,"term"),h=hnd(u.cls);
-    return `<div class="card row" style="--c:${COL[u.cls]};flex-wrap:wrap"><div style="flex:1;min-width:150px"><b>${esc(u.name)}</b> <span class="m">${u.cls}</span><div class="m">${u.email?"Login: "+esc(u.email):"<b>No login email yet. Tap Rename to add one.</b>"}</div><div class="m">Collected ${fmt(c)} · Handed in ${fmt(h)} · Gap <b>${fmt(c-h)}</b></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn s sm" onclick="handM('${u.id}')">Handover</button><button class="btn s sm" onclick="renameM('${u.id}')">Rename</button><button class="btn s sm" onclick="togMarks('${u.id}')" style="${u.marks===false?'border-color:var(--no);color:var(--no)':''}">Marks: ${u.marks===false?"Off":"On"}</button><button class="btn s sm" onclick="resetT('${u.id}')">Reset</button></div></div>`}).join("")+
-`<div class="card"><h3>Fees period (KSh ${TF} per student per term)</h3><label>Academic year</label><input id="fyy" type="number" value="${S.fy}"><label>Current term</label><select id="fyt">${[1,2,3].map(n=>`<option value="${n}" ${S.ft===n?"selected":""}>Term ${n}</option>`).join("")}</select><button class="btn sm" onclick="saveFPer()">Set current period</button></div>
-<div class="card"><h3>Term setup</h3><label>Weekly fee (KSh)</label><input id="fee" type="number" value="${WK}"><label>Week 1 starts on</label><input id="st" type="date" value="${S.start||""}"><div class="m" style="margin-bottom:6px">Tap a week to mark it as no collection (holiday)</div><div class="chips">${Array.from({length:W},(_,i)=>`<button class="chip ${S.hol[i+1]?"on":""}" onclick="hol(${i+1},this)">${i+1}</button>`).join("")}</div><button class="btn sm" onclick="saveTerm()">Save term setup</button><p class="m" style="margin-top:10px">Current week: ${S.week}</p><button class="btn s sm" onclick="nextWk()">Start next week</button></div>
-<div class="card"><h3>Report card details</h3><label>School motto (printed under the school name)</label><input id="rc_motto" value="${esc((S.rc||{}).motto||"")}"><label>Head teacher’s name</label><input id="rc_head" value="${esc((S.rc||{}).head||"")}"><label>Next term opens on</label><input id="rc_next" type="date" value="${esc((S.rc||{}).next||"")}"><button class="btn sm" onclick="saveRC()">Save report card details</button></div>
-<div class="card"><h3>Subject teachers</h3><p class="m">Choose a class and name who teaches each subject. This powers the best-subject and teacher-mean analysis and the teacher column on report cards.</p><div class="chips">${CL.map(c=>`<button class="chip" onclick="stM('${c}')">${c}</button>`).join("")}</div></div>
-<div class="card"><h3>New school year</h3><p class="m">Moves Grade 8 to 9 and Grade 7 to 8, archives Grade 9 leavers, and clears weeks and payments. Download a backup first.</p><button class="btn s sm" onclick="promoM()">Promote all grades</button></div>
-<div class="card"><h3>Backup</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onclick="bak()">Download backup</button><span class="fbtn btn s sm">Restore from file<input type="file" onchange="rest(this)"></span></div></div>
-<h3>Activity log</h3><div class="led">${S.log.slice(0,25).map(x=>`<div class="lr" style="cursor:default;display:block"><b>${esc(x.m)}</b><div class="m">${esc(x.u)} · ${new Date(x.t).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</div></div>`).join("")||`<div class="lr m">Nothing yet.</div>`}</div>
-<div class="card" style="margin-top:12px"><b>Demo data</b><p class="m">Sample students and payments are loaded so you can try Osembo.</p><button class="btn s sm" onclick="clearDemo()">Clear demo students</button></div>`}
+  const sec=(t,b,o)=>`<details class="card"${o?" open":""}><summary><b>${t}</b></summary><div style="margin-top:12px">${b}</div></details>`;
+  const teachers=S.users.filter(u=>u.role==="teacher").map(u=>{const c=tot(u.cls,"term"),h=hnd(u.cls);
+    return `<div class="card row" style="--c:${COL[u.cls]};flex-wrap:wrap"><div style="flex:1;min-width:150px"><b>${esc(u.name)}</b> <span class="m">${u.cls}</span><div class="m">${u.email?"Login: "+esc(u.email):"<b>No login email yet. Tap Rename to add one.</b>"}</div><div class="m">Collected ${fmt(c)} · Handed in ${fmt(h)} · Gap <b>${fmt(c-h)}</b></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn s sm" onclick="handM('${u.id}')">Handover</button><button class="btn s sm" onclick="renameM('${u.id}')">Rename / email</button><button class="btn s sm" onclick="togMarks('${u.id}')" style="${u.marks===false?"border-color:var(--no);color:var(--no)":""}">Marks ${u.marks===false?"off":"on"}</button><button class="btn s sm" onclick="resetT('${u.id}')">Reset password</button></div></div>`}).join("");
+  const term=`<label>Academic year</label><input id="fyy" type="number" value="${S.fy}"><label>Current term</label><select id="fyt">${[1,2,3].map(n=>`<option value="${n}" ${S.ft===n?"selected":""}>Term ${n}</option>`).join("")}</select><label>Weekly remedial fee (KSh)</label><input id="fee" type="number" value="${WK}"><label>Week 1 starts on</label><input id="st" type="date" value="${S.start||""}"><div class="m" style="margin-bottom:6px">Tap a week to mark it as no collection (holiday)</div><div class="chips">${Array.from({length:W},(_,i)=>`<button class="chip ${S.hol[i+1]?"on":""}" onclick="hol(${i+1},this)">${i+1}</button>`).join("")}</div><button class="btn sm" onclick="saveTerm()">Save term setup</button><div class="m" style="margin:14px 0 6px">Current remedial week: <b>${S.week}</b> of ${W}</div><button class="btn s sm" onclick="nextWk()">Start next week</button><div class="m" style="margin-top:8px">School fees are KSh ${TF} per student per term.</div>`;
+  const rcs=`<label>School motto</label><input id="rc_motto" value="${esc((S.rc||{}).motto||"")}"><label>Head teacher’s name</label><input id="rc_head" value="${esc((S.rc||{}).head||"")}"><label>Next term opens on</label><input id="rc_next" type="date" value="${esc((S.rc||{}).next||"")}"><button class="btn sm" onclick="saveRC()">Save report card details</button><div class="m" style="margin:14px 0 6px">Subject teachers (used for analysis and report cards). Pick a class:</div><div class="chips">${CL.map(c=>`<button class="chip" onclick="stM('${c}')">${c}</button>`).join("")}</div>`;
+  const sub=`<p class="m">Sends an M-Pesa payment prompt to the phone below. Enter your PIN on the phone to pay.</p><label>M-Pesa phone number</label><input id="rph" inputmode="tel" placeholder="07XX XXX XXX"><button class="btn sm" onclick="renewM()">Renew for 1 month</button>`;
+  const data=`<div class="row2"><button class="btn sm" onclick="bak()">Download backup</button><span class="fbtn btn s sm">Restore from file<input type="file" onchange="rest(this)"></span></div><div class="m" style="margin:6px 0 14px">Your data is also saved online. A backup file is an extra safety copy.</div><div class="row2"><button class="btn s sm" onclick="promoM()">Promote all grades</button><button class="btn s sm" onclick="clearDemo()">Clear demo students</button><button class="btn dn sm" onclick="delM('ALL')">Delete all students</button></div>`;
+  const log=S.log.slice(0,25).map(x=>`<div class="lr" style="cursor:default;display:block;padding:8px 0"><b>${esc(x.m)}</b><div class="m">${esc(x.u)} · ${new Date(x.t).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</div></div>`).join("")||`<div class="m">Nothing yet.</div>`;
+  return `<h2 class="sec">Admin settings</h2>`+bakWarn()+sec("Class teachers & cash handover",teachers,1)+sec("Term & fees setup",term)+sec("Report cards & subject teachers",rcs)+sec("Renew subscription",sub)+sec("Year & data",data)+sec("Activity log",log)}
+async function renewM(){
+  const ph=$("#rph").value.replace(/\s/g,"");
+  if(!/^0[17]\d{8}$/.test(ph))return T("Enter a valid phone, e.g. 0712345678");
+  const {data}=await sb.auth.getSession();
+  if(!data.session)return T("Please log in again");
+  T("Sending payment prompt...");
+  try{
+    const r=await fetch(SB_URL+"/functions/v1/mpesa-pay",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+data.session.access_token,apikey:SB_KEY},body:JSON.stringify({phone:ph,months:1})});
+    const j=await r.json().catch(()=>({}));
+    T(r.ok?"Check your phone and enter your M-Pesa PIN":(j.error||"Payment request failed"));
+  }catch(e){T("Could not reach the payment service")}
+}
 function hol(w,el){S.hol[w]=!S.hol[w];save();el.classList.toggle("on")}
-function saveTerm(){if(me().role!=="admin")return;S.fee=WK=Math.max(1,Math.round(+$("#fee").value||50));S.start=$("#st").value;LOG("Term setup saved, fee "+fmt(WK));save();R();T("Term setup saved")}
+function saveTerm(){if(me().role!=="admin")return;const y=Math.round(+$("#fyy").value),t=+$("#fyt").value;if(!(y>=2000&&y<=2100))return T("Enter a valid year");S.fee=WK=Math.max(1,Math.round(+$("#fee").value||50));S.start=$("#st").value;S.fy=ui.fy=y;S.ft=ui.ft=t;LOG("Term setup saved: Term "+t+" "+y+", fee "+fmt(WK));save();R();T("Term setup saved")}
 function handM(id){const u=U(id),g=Math.max(0,tot(u.cls,"term")-hnd(u.cls));M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Cash handed in, ${u.cls}</h3><p class="m">From ${esc(u.name)}</p><label>Amount received (KSh)</label><input id="ha" type="number" inputmode="numeric" value="${g}"><button class="btn" onclick="saveHand('${id}')">Record handover</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
 function saveHand(id){const u=U(id),a=Math.round(+$("#ha").value||0);if(me().role!=="admin"||a<=0)return T("Enter an amount");S.hand.push({cls:u.cls,a,t:Date.now()});LOG("Handover "+fmt(a)+" from "+u.cls);save();cm();R();T("Handover recorded")}
 function promoM(){M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Promote all grades?</h3><p class="m">Grade 9 students are archived, Grade 8 moves to 9, Grade 7 moves to 8. Weeks, payments and handovers are cleared. This cannot be undone, so download a backup first.</p><button class="btn" onclick="promote()">Yes, promote</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
@@ -655,10 +703,11 @@ function saveEdit(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))ret
 function leftM(id){const s=S.st.find(x=>x.id===id);if(!s||!canEdit(s.cls))return;if(ui.cf!==id){ui.cf=id;return T("Tap Mark as left school again to confirm")}ui.cf=null;s.left=1;LOG(s.name+" marked as left");save();cm();R();T("Marked as left")}
 function renameM(id){const u=U(id);M(`<div class="ov" onclick="if(event.target===this)cm()"><div class="sheet"><h3>Class teacher for ${u.cls}</h3><label>Teacher name</label><input id="tn" value="${esc(u.name)}"><label>Login email (the teacher uses this to log in)</label><input id="tem" type="email" value="${esc(u.email||"")}"><button class="btn" onclick="saveName('${id}')">Save</button><button class="btn s" style="margin-top:8px" onclick="cm()">Cancel</button></div></div>`)}
 function saveName(id){const n=$("#tn").value.trim(),em=$("#tem").value.trim().toLowerCase();if(!n)return T("Enter a name");if(em&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))return T("Enter a valid email");const u=U(id);u.name=n;u.email=em;save();cm();R();T("Saved")}
-async function resetT(id){if(me().role!=="admin")return;const u=U(id);if(!u.email)return T("Add the teacher's login email first");const {error}=await sb.auth.resetPasswordForEmail(u.email,{redirectTo:window.location.href});T(error?"Could not send the reset email":"Reset email sent to "+u.email)}
+async function resetT(id){if(me().role!=="admin")return;const u=U(id);if(!u.email)return T("Add the teacher's login email first");const {error}=await sb.auth.resetPasswordForEmail(u.email,{redirectTo:WEB_URL||window.location.href});T(error?"Could not send the reset email":"Reset email sent to "+u.email)}
 function nextWk(){if(me().role!=="admin"||S.week>=W)return;S.week++;save();ui.week=S.week;R()}
 function clearDemo(){if(me().role!=="admin")return;S.st=S.st.filter(s=>!s.demo);S.fp=S.fp.filter(x=>S.st.some(s=>s.id===x.sid));Object.keys(S.res).forEach(k=>{if(!S.st.some(s=>s.id===k.split("|")[3]))delete S.res[k]});save();R();T("Demo students cleared")}
 
 function R(){const a=$("#app");a.innerHTML=!ui.sess?vLogin():vMain();if(ui.tab==="marks"&&ui.sess&&typeof mStats==="function")mStats();if(ui.mfocus){ui.mfocus=0;setTimeout(mFocus,30)}}
 boot();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script></body></html>

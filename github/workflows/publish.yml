@@ -1,0 +1,93 @@
+# One workflow does everything: builds the Android app, then publishes the web page and the app together.
+# Runs automatically every time you change a file. Takes about 6 to 10 minutes.
+name: Build and publish
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Make icons
+        run: |
+          pip install pillow
+          python make_icons.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install tools
+        run: npm install
+      - name: Copy web files into the app
+        run: |
+          mkdir www
+          cp -r index.html config.js manifest.webmanifest sw.js icons www/
+      - name: Create the Android project
+        run: npx cap add android
+      - name: Make app icon and splash screen
+        run: npx --yes @capacitor/assets@3 generate --android || echo "Icon step skipped, default icon will be used"
+      - name: Sync
+        run: npx cap sync android
+      - name: Use the fixed signing key (so new versions install over old ones)
+        run: |
+          mkdir -p ~/.android
+          base64 -d signing/debug.keystore.b64 > ~/.android/debug.keystore
+      - name: Build the APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - name: Name the file
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Osembo.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osembo-apk
+          path: Osembo.apk
+  web:
+    needs: apk
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Make icons
+        run: |
+          pip install pillow
+          python make_icons.py
+      - name: Collect web files
+        run: |
+          mkdir _site
+          cp -r index.html config.js manifest.webmanifest sw.js icons _site/
+      - name: Add the Android app to the site
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: osembo-apk
+          path: _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
