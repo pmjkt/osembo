@@ -7,5 +7,5 @@ window.OSEMBO = {
   // The email address the school admin logs in with. Must be the same as the email invited in Supabase.
   ADMIN_EMAIL: "pm7huo@gmail.com",
   // Your web address after publishing, with a slash at the end. Example: https://yourname.github.io/osembo/
-  WEB_URL: ""
+  WEB_URL: "https://pmjkt.github.io/osembo/"
 };
