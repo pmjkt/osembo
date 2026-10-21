@@ -60,7 +60,7 @@ Teachers only ever use your web address. On an Android phone that page has a **D
 ## F. Add teachers
 
 1. Log in as admin. Menu (☰) > **Admin settings > Class teachers**. Tap **Rename / email** on a teacher, enter their name and email, Save.
-2. Supabase **Authentication > Users > Add user > Create new user** with the same email and a password. Tick **Auto Confirm User**.
+2. Tap **Create login** on the same teacher card and type a password (or, for the first school only, add the user in Supabase and run `licensing.sql` again).
 3. Give the teacher the web address, their email and password. They can change the password with **Forgot password** on the login screen.
 4. Each teacher sees only their own class.
 
@@ -76,20 +76,49 @@ If the Android build fails (red cross on the `apk` step), the web page still pub
 
 - Admin settings > **Year & data > Clear demo students**.
 - Download a backup now and then (**Year & data > Download backup**).
-- Subscription: the SQL gives the school 1 month. To extend by hand: Supabase **Table Editor > `subscriptions` > `osembo-main`** > change `paid_until`. Access ends on that date.
+- Subscription: the SQL gives the school 1 month. Extend it by issuing a licence key (section G) or by hand: Supabase **Table Editor > `subscriptions`** > change `paid_until`. Access ends on that date.
 - Student data is personal data under Kenya's Data Protection Act, 2019. Keep the school's written agreement on file.
 
-## G. M-Pesa renewal (optional, do last)
+## G. Licensing: renting Osembo to schools (do this after A to F)
 
-Needs a Safaricom Daraja account and approval for Lipa na M-Pesa Buy Goods on your till. Start in **sandbox**.
+One Supabase project now serves many schools. Each school gets its own data, its own logins and its own expiry date. Access is enforced **inside the database**: when the date passes (or you suspend the school), the database refuses that school's data, whatever the app says.
 
+**1. Upgrade the database.** SQL Editor > New query > paste `licensing.sql` > Run. First change the email near the bottom (`pm7huo@gmail.com`) to your own school's admin login email. This moves your current school into the new system.
+
+**2. Deploy two new functions** (Edge Functions > Deploy a new function > Via Editor):
+- `activate-license`: paste `supabase/functions/activate-license/index.ts`. Turn **OFF** "Enforce JWT verification" (a new school has no login yet).
+- `staff-account`: paste `supabase/functions/staff-account/index.ts`. Leave JWT verification **ON**.
+
+**3. Selling a licence (you, in the SQL Editor):**
+
+```sql
+-- New school, access through 30 April 2027. Prints a key like 7K2P-9QXA-4MTD-8WZB
+select create_license('St. Mary Academy', '2027-04-30');
+
+-- School that bought the software outright (no practical end date)
+select create_license('St. Mary Academy', '2099-12-31');
+
+-- Renewal for a school that already exists. Use its school_id from the subscriptions table
+select create_license('St. Mary Academy', '2027-08-31', 'st-mary-academy-3f2a');
+```
+
+Send the key to the headmaster. On the login page they tap **Activate with licence key**, enter the key, their email and a password. That creates their admin login. From then on they can create teacher logins themselves (Admin settings > Class teachers > **Create login**).
+
+**4. Managing schools (Supabase > Table Editor > `subscriptions`):**
+- `paid_until`: change it any time to extend or cut short.
+- `suspended`: tick it to switch a school off immediately. Untick to restore.
+- `term_price`: KSh per term for that school (used by M-Pesa payment).
+- Keys you issued and whether they are used: table `license_keys`. Set `status` to `revoked` to cancel an unused key.
+
+**5. M-Pesa self-service renewal (optional).** Needs a Safaricom Daraja account and approval for Lipa na M-Pesa Buy Goods on your till. Start in **sandbox**.
 1. Daraja: create an app, copy the **Consumer Key** and **Consumer Secret**, and get the **Passkey** for your shortcode.
-2. Supabase **Edge Functions > Secrets**, add: `MPESA_CONSUMER_KEY`, `MPESA_CONSUMER_SECRET`, `MPESA_PASSKEY`, `MPESA_TILL` (your till number), `MPESA_ENV` (`sandbox`, later `production`), `SUBSCRIPTION_PRICE` (for example `1000`), `ADMIN_EMAIL` (the admin email).
-3. **Edge Functions > Deploy a new function > Via Editor**. Name `mpesa-pay`, paste `supabase/functions/mpesa-pay/index.ts`, deploy.
-4. Second function `mpesa-callback`, paste `supabase/functions/mpesa-callback/index.ts`. In its settings turn **OFF "Enforce JWT verification"**, then deploy. (M-Pesa cannot send a login token.)
-5. Test: Admin settings > **Renew subscription** > phone number > **Renew for 1 month**.
+2. Supabase **Edge Functions > Secrets**, add: `MPESA_CONSUMER_KEY`, `MPESA_CONSUMER_SECRET`, `MPESA_PASSKEY`, `MPESA_TILL` (your till number), `MPESA_ENV` (`sandbox`, later `production`), `SUBSCRIPTION_PRICE` (default KSh per term, for example `1000`), `TERM_MONTHS` (months of access per term paid, `4`), `MPESA_CALLBACK_TOKEN` (any long random text you make up).
+3. Deploy `mpesa-pay` (JWT verification ON) and `mpesa-callback` (JWT verification **OFF**, because M-Pesa cannot send a login token). Redeploy them if you used the old versions.
+4. Test: log in as a school admin > Admin settings > **Licence & renewal** > phone number > **Send payment prompt**. The app updates itself when the payment is confirmed.
 
-The app shows the till number set as `TILL` near the top of the script in `index.html`. Change it there if your till is different.
+An admin whose school has expired can still log in. They see only a renewal screen (enter a key, or pay by M-Pesa) and no school data until it is paid.
+
+**Honest limits.** Enforcement works because the data lives in *your* Supabase project. The app code on GitHub is public, so anyone can copy it, but a copy has no database to read from. If you ever give a school its own Supabase project (a full buy-out with hosting handed over), you can no longer switch it off.
 
 ## Troubleshooting
 
@@ -98,7 +127,9 @@ The app shows the till number set as `TILL` near the top of the script in `index
 | "Osembo setup is not finished" | config.js has an empty or mistyped Supabase address or key. Edit it in GitHub, commit, wait for the green tick. |
 | "Wrong email or password" | Supabase > Authentication > Users: is the email there? Reset the password there if needed. |
 | "This account is not set up for Osembo" | Admin settings > the teacher > **Rename / email**: the email must match the Supabase user exactly. |
-| "Subscription has expired" | Supabase > Table Editor > `subscriptions` > set `paid_until` to a future date. |
+| "Subscription has expired" | The admin can renew in the app (key or M-Pesa), or you set `paid_until` in Table Editor > `subscriptions`. |
+| "This account is not linked to a school" | The login has no row in `school_members`. Create teacher logins with the **Create login** button, or add the row by hand. |
+| M-Pesa prompt arrives but access is not extended | `mpesa-callback` must have JWT verification OFF and `MPESA_CALLBACK_TOKEN` set the same everywhere. Check `mpesa_payments` for the status. |
 | Reset email opens the wrong page | Redo step E (Site URL, Redirect URLs, `WEB_URL`). |
 | Page shows an old version | Close and reopen the app once while online. |
 | Download button gives "file not found" | The Android build did not finish. Open the Actions run and send me the error. |

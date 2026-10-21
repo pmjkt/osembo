@@ -31,22 +31,27 @@ Deno.serve(async (req) => {
   try {
     const env = (k: string) => Deno.env.get(k) ?? "";
 
-    // 1. Only the school admin (ADMIN_EMAIL secret) may start a payment
+    // 1. Only the admin of a school may start a payment, and it is always for THEIR school
     const userClient = createClient(env("SUPABASE_URL"), env("SUPABASE_ANON_KEY"), {
       global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
     });
     const { data: { user } } = await userClient.auth.getUser();
-    if (!user || (user.email ?? "").toLowerCase() !== env("ADMIN_EMAIL").toLowerCase()) {
-      return json({ error: "Only the school admin can renew the subscription" }, 403);
-    }
+    if (!user) return json({ error: "Please log in again" }, 401);
+    const admin = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"));
+    const { data: mem } = await admin.from("school_members").select("school_id,role").eq("user_id", user.id).maybeSingle();
+    if (!mem || mem.role !== "admin") return json({ error: "Only the school admin can renew the subscription" }, 403);
+    const { data: sub } = await admin.from("subscriptions").select("term_price,suspended").eq("school_id", mem.school_id).maybeSingle();
+    if (sub?.suspended) return json({ error: "This school's access is paused. Contact the Osembo provider." }, 403);
 
-    // 2. Check the phone number and work out the amount
-    const { phone, months } = await req.json();
+    // 2. Check the phone number and work out the amount (price per term x number of terms)
+    const { phone, terms } = await req.json();
     const msisdn = toMsisdn(String(phone ?? ""));
     if (!msisdn) return json({ error: "Enter a valid phone number, e.g. 0712345678" }, 400);
-    const m = Math.min(Math.max(parseInt(months) || 1, 1), 12);
-    const amount = Number(env("SUBSCRIPTION_PRICE")) * m;
-    if (!amount || amount <= 0) return json({ error: "SUBSCRIPTION_PRICE secret is not set" }, 500);
+    const t = Math.min(Math.max(parseInt(terms) || 1, 1), 3);
+    const price = Number(sub?.term_price ?? env("SUBSCRIPTION_PRICE"));
+    const amount = price * t;
+    if (!amount || amount <= 0) return json({ error: "No price is set for this school" }, 500);
+    const months = t * (Number(env("TERM_MONTHS")) || 4);
 
     // 3. Get an M-Pesa access token
     const base = env("MPESA_ENV") === "production"
@@ -74,7 +79,7 @@ Deno.serve(async (req) => {
         PartyA: msisdn,
         PartyB: shortcode,
         PhoneNumber: msisdn,
-        CallBackURL: env("SUPABASE_URL") + "/functions/v1/mpesa-callback",
+        CallBackURL: env("SUPABASE_URL") + "/functions/v1/mpesa-callback?t=" + encodeURIComponent(env("MPESA_CALLBACK_TOKEN")),
         AccountReference: "Osembo",
         TransactionDesc: "Osembo subscription",
       }),
@@ -85,9 +90,8 @@ Deno.serve(async (req) => {
     }
 
     // 5. Remember the pending payment so the callback can match it
-    const admin = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"));
     const { error } = await admin.from("mpesa_payments").insert({
-      school_id: "osembo-main", phone: msisdn, amount, months: m,
+      school_id: mem.school_id, phone: msisdn, amount, months,
       checkout_request_id: stk.CheckoutRequestID, status: "pending",
     });
     if (error) return json({ error: "Could not record the payment: " + error.message }, 500);

@@ -10,6 +10,9 @@ const ok = () =>
 
 Deno.serve(async (req) => {
   try {
+    // Only accept calls that carry our secret (set MPESA_CALLBACK_TOKEN; it is added to the callback address)
+    const want = Deno.env.get("MPESA_CALLBACK_TOKEN") ?? "";
+    if (want && new URL(req.url).searchParams.get("t") !== want) return ok();
     const body = await req.json();
     const cb = body?.Body?.stkCallback;
     if (!cb?.CheckoutRequestID) return ok();
